@@ -29,7 +29,8 @@ Introdução ao Qiskit:
 - Portas quânticas básicas (H, X, CNOT)
 - Simulação e visualização
 - Estados de Bell e emaranhamento quântico
-- Visuh
+- Visualizações de estados quânticos
+- Visualização na Esfera de Bloch
 
 ### 02a-teletransport.ipynb / 02b-teletransport.ipynb
 Protocolo de Teletransporte Quântico:
