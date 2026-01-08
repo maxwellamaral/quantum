@@ -62,6 +62,34 @@ Protocolo de Teletransporte Quântico:
 - Cálculos matemáticos detalhados de cada etapa
 - Visualização 3D interativa customizada (Q-Sphere)
 
+#### 🔧 notebooks/02-teletransport.qasm
+**Implementação OpenQASM do Protocolo de Teletransporte**
+
+Arquivo QASM complementar ao notebook, pronto para uso no **IBM Quantum Composer**:
+
+- **Formato**: OpenQASM 2.0 (padrão da indústria)
+- **Uso no IBM Quantum Platform**:
+  - ✅ Importação direta no [IBM Quantum Composer](https://quantum.ibm.com/composer)
+  - ✅ Execução em simuladores quânticos (ex: `ibmq_qasm_simulator`)
+  - ✅ Execução em **hardware quântico real** da IBM (ex: `ibm_brisbane`, `ibm_kyoto`)
+  - ✅ Visualização gráfica do circuito
+  - ✅ Análise de resultados com histogramas
+  - ✅ Comparação entre simulação ideal e hardware real (efeitos de ruído e decoerência)
+  - ✅ Exportação para outros frameworks (Qiskit, Cirq, etc.)
+
+- **Comentários detalhados**: O arquivo contém documentação completa de cada etapa do protocolo
+- **Educacional**: Ideal para demonstrações em sala de aula ou apresentações
+- **Pesquisa**: Base para experimentos em hardware quântico real
+
+**Como usar**:
+1. Acesse [quantum.ibm.com/composer](https://quantum.ibm.com/composer)
+2. Clique em "Import QASM" ou "Open QASM"
+3. Faça upload do arquivo `02-teletransport.qasm`
+4. Escolha o backend (simulador ou hardware real)
+5. Execute e analise os resultados!
+
+**Nota**: Em hardware real, a taxa de sucesso será menor que 100% devido a ruído quântico, decoerência e imperfeições dos qubits físicos - uma excelente oportunidade para estudar desafios práticos da computação quântica!
+
 ### notebooks/03-mais-sobre-Hadamard.md
 Interpretação Física da Porta Hadamard:
 - Conexão entre a porta Hadamard e espelhos semitransparentes (Beam Splitters)
