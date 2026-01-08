@@ -22,7 +22,7 @@ Fundamentos matemáticos para computação quântica:
 - Produto tensorial
 - Notação de Dirac
 
-### 01.intro.ipynb
+### 01-intro.ipynb
 Introdução ao Qiskit:
 - Configuração e primeiros passos
 - Criação de circuitos quânticos
