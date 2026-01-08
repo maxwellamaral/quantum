@@ -22,12 +22,14 @@ Fundamentos matemáticos para computação quântica:
 - Produto tensorial
 - Notação de Dirac
 
-### 01-qiskit-use.ipynb
+### 01.intro.ipynb
 Introdução ao Qiskit:
 - Configuração e primeiros passos
 - Criação de circuitos quânticos
-- Portas quânticas básicas
+- Portas quânticas básicas (H, X, CNOT)
 - Simulação e visualização
+- Estados de Bell e emaranhamento quântico
+- Visuh
 
 ### 02a-teletransport.ipynb / 02b-teletransport.ipynb
 Protocolo de Teletransporte Quântico:
