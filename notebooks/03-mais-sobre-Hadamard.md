@@ -74,7 +74,7 @@ Aqui está como isso acontece na vida real versus o que a nossa intuição esper
 
 Imagine uma mesa de laboratório com a seguinte configuração:
 
-![Interferômetro de Mach-Zehnder](interferometer.png)
+![Interferômetro de Mach-Zehnder](../assets/interferometer.png)
 
 1. **Fonte:** Dispara um **único fóton**.
 2. **Espelho A ou *Beam Splitter 1* (Hadamard 1):** Semitransparente. Divide o caminho.
