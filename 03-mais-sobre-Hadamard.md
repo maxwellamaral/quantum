@@ -2,7 +2,7 @@
 
 **Se um fóton ultrapassa uma espelho perfeitamente semitransparente, qual o percentual de luz que transpassa o espelho e qual o percentual de luz que é refletida?**
 
-Essa pergunta é fundamental, pois ela é o elo entre o mundo físico e o código que foi escrito em [01-intro.ipynb](01-intro.ipynb) (`qc.h(0)`).
+Essa pergunta é fundamental, pois ela é o elo entre o mundo físico e o código que foi escrito em [01-intro.ipynb](01-intro.ipynb) (`qc.h(0)`) e em [00-math.ipynb](00-math.ipynb).
 
 A resposta depende se você está falando de **um raio de luz** (mundo clássico) ou de **um único fóton** (mundo quântico).
 
