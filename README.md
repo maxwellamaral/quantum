@@ -32,7 +32,7 @@ Introdução ao Qiskit:
 - Visualizações de estados quânticos
 - Visualização na Esfera de Bloch
 
-### 02a-teletransport.ipynb / 02b-teletransport.ipynb
+### 02-teletransport.ipynb
 Protocolo de Teletransporte Quântico:
 - Implementação completa do protocolo de Bennett et al.
 - Criação de estados emaranhados (pares de Bell)
@@ -40,6 +40,24 @@ Protocolo de Teletransporte Quântico:
 - Correções quânticas condicionais
 - Visualizações em Bloch sphere, Q-Sphere e State City
 - Cálculos matemáticos detalhados de cada etapa
+
+### 03-mais-sobre-Hadamard.md
+Interpretação Física da Porta Hadamard:
+- Conexão entre a porta Hadamard e espelhos semitransparentes (Beam Splitters)
+- Diferença entre comportamento clássico e quântico
+- Interferômetro de Mach-Zehnder e interferência quântica
+- Demonstração experimental da superposição e interferência
+- Vídeo demonstrativo do experimento real
+- Relação com o Prêmio Nobel de Física de 2022
+
+### 04-Hadamard-experiment.ipynb
+Experimento de Interferência com Hadamard:
+- Simulação do Interferômetro de Mach-Zehnder
+- Aplicação de duas portas Hadamard sequenciais
+- Visualizações em Esfera de Bloch e Q-Sphere após cada operação
+- Demonstração de interferência construtiva e destrutiva
+- Visualização do circuito quântico completo
+- Comprovação da reversibilidade da porta Hadamard
 
 ## 🛠️ Tecnologias Utilizadas
 
@@ -103,9 +121,12 @@ Os notebooks incluem múltiplas formas de visualização:
 - Emaranhamento quântico
 - Medição e colapso de estado
 - Portas quânticas (X, H, CNOT, CZ)
+- Interferência quântica (construtiva e destrutiva)
+- Beam Splitters e interpretação física de portas quânticas
 
 ### Protocolos
-- Teletransporte Quântico (Bennett et al., 1993)
+- Teletransporte 
+- Interferômetro de Mach-ZehnderQuântico (Bennett et al., 1993)
 - Preparação de estados de Bell
 - Medição de Bell
 
@@ -135,9 +156,62 @@ Contribuições são bem-vindas! Sinta-se à vontade para:
 
 ## 📚 Referências
 
-- [Qiskit Documentation](https://qiskit.org/documentation/)
-- Bennett, C. H., et al. "Teleporting an unknown quantum state via dual classical and Einstein-Podolsky-Rosen channels." Physical Review Letters 70.13 (1993): 1895.
-- Nielsen, M. A., & Chuang, I. L. (2010). Quantum Computation and Quantum Information.
+### **1. Bennett et al. (1993) - Teletransporte Quântico**
+
+**Referência completa:** Bennett, C. H., Brassard, G., Crépeau, C., Jozsa, R., Peres, A., & Wootters, W. K. (1993). "Teleporting an unknown quantum state via dual classical and Einstein-Podolsky-Rosen channels." *Physical Review Letters*, 70(13), 1895-1899. DOI: 10.1103/PhysRevLett.70.1895[^1][^2][^3]
+
+**Informações principais:**
+- Publicado em 29 de março de 1993
+- Artigo seminal que propõe o conceito de teletransporte quântico
+- Descreve como um estado quântico desconhecido pode ser desmontado em informação clássica pura e correlações Einstein-Podolsky-Rosen (EPR), e depois reconstruído
+- Exigido que Alice e Bob pré-compartilhem um par de partículas emaranhadas
+- Mais de 10.666 citações, classificado como um marco (Milestone) no *Physical Review Letters*[^4]
+- Disponível em acesso aberto no APS[^1]
+
+### **2. Nielsen & Chuang (2010) - Computação Quântica e Informação Quântica**
+
+**Referência completa:** Nielsen, M. A., & Chuang, I. L. (2010). *Quantum Computation and Quantum Information*[^5][^6]
+
+**Informações principais:**
+- Um dos textos mais citados em física (65.855 citações)[^7]
+- Considerado o melhor livro-texto nesta área de pesquisa[^6]
+- Obra de referência abrangente cobrindo:
+  - Conceitos fundamentais de computação quântica
+  - Teoria da informação quântica
+  - Códigos corretores de erros quânticos
+  - Entropia em sistemas quânticos
+  - Computação quântica por medição
+- Acessível a qualquer pessoa com formação sólida em matemática, ciência da computação ou física[^6]
+
+### **3. Aspect, Clauser & Zeilinger (2022) - Prêmio Nobel de Física**
+
+**Referência:** Aspect, A., Clauser, J. F., & Zeilinger, A. (2022). *Nobel Prize in Physics - Experiments with entangled photons and violation of Bell inequalities*[^8][^9]
+
+**Informações principais:**
+- Prêmio Nobel de Física 2022 em partes iguais[^9][^8]
+  - **Alain Aspect** - Université Paris-Saclay e École Polytechnique
+  - **John F. Clauser** - J.F. Clauser & Associates
+  - **Anton Zeilinger** - Universidade de Viena
+- Reconhecidos "por experimentos com fótons emaranhados, estabelecendo a violação das desigualdades de Bell e pioneirismo na ciência da informação quântica"[^8]
+- Contribuições:
+  - Estabelecimento da propriedade quântica do emaranhamento
+  - Demonstração de que partículas quânticas podem estar emaranhadas
+  - Demonstração experimental do teletransporte quântico (1997, por Zeilinger)[^8]
+  - Primeira demonstração experimental de "entanglement swapping" (1998)[^8]
+  - Fundações fundamentais para computação e comunicação quântica[^9]
+
+
+### **4. Documentação Qiskit **
+
+**Referência:** [Qiskit Documentation](https://qiskit.org/documentation/)
+
+**Informações principais:**
+- Documentação oficial do Qiskit, o framework de computação quântica da IBM
+- Recursos abrangentes sobre:
+  - Instalação e configuração
+  - Tutoriais para iniciantes e avançados
+  - Referência de API para módulos Qiskit
+  - Exemplos de código e notebooks interativos
 
 ## 📄 Licença
 
@@ -171,6 +245,14 @@ AMARAL, Maxwell Anderson Ielpo. Quantum Computing com Qiskit: Material Educacion
 2026. Disponível em: https://github.com/maxwellamaral/quantum. Acesso em: 08 jan. 2026.
 ```
 
----
+### Notas de Rodapé
 
-**⚛️ Explorando o fascinante mundo da computação quântica!**
+[^1]: https://link.aps.org/doi/10.1103/PhysRevLett.70.1895
+[^2]: http://www.sabrizain.org/piccard/research/teleport.pdf
+[^3]: https://ui.adsabs.harvard.edu/abs/1993PhRvL..70.1895B
+[^4]: https://www.semanticscholar.org/paper/Teleporting-an-unknown-quantum-state-via-dual-and-Bennett-Brassard/a3e45ffd3886f1a26f849514de3791054eebcc42
+[^5]: https://www.academia.edu/41154803/Quantum_Computation_and_Quantum_Information_by_Nielsen_and_Chuang
+[^6]: https://profmcruz.wordpress.com/wp-content/uploads/2017/08/quantum-computation-and-quantum-information-nielsen-chuang.pdf
+[^7]: https://pages.jh.edu/rrynasi1/HealeySeminar/literature/Nielsen+Chuang2010QuantumComputation+QuantumInformation.FirstTwoChapters.pdf
+[^8]: https://www.optica.org/about/newsroom/news_releases/2022/october/aspect_clauser_zeilinger_awarded_2022_nobel_prize/
+[^9]: https://www.scientificamerican.com/article/explorers-of-quantum-entanglement-win-2022-nobel-prize-in-physics1/
