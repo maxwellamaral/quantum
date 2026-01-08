@@ -13,16 +13,36 @@ Este repositório contém notebooks Jupyter interativos que exploram conceitos f
 - Fornecer explicações matemáticas detalhadas junto com código executável
 - Servir como material didático para quem está aprendendo computação quântica
 
+## � Estrutura do Projeto
+
+```
+quantum/
+├── notebooks/          # Notebooks Jupyter educacionais
+│   ├── 00-math.ipynb
+│   ├── 01-intro.ipynb
+│   ├── 02-teletransport.ipynb
+│   ├── 03-mais-sobre-Hadamard.md
+│   ├── 04-Hadamard-experiment.ipynb
+│   └── 05-interference.ipynb
+├── src/                # Módulos Python reutilizáveis
+│   ├── __init__.py
+│   └── quantum_viz.py  # Funções de visualização interativa
+├── assets/             # Recursos (imagens, vídeos, etc.)
+├── README.md
+├── LICENSE
+└── pyproject.toml
+```
+
 ## 📖 Notebooks Disponíveis
 
-### 00-math.ipynb
+### notebooks/00-math.ipynb
 Fundamentos matemáticos para computação quântica:
 - Álgebra linear
 - Números complexos
 - Produto tensorial
 - Notação de Dirac
 
-### 01-intro.ipynb
+### notebooks/01-intro.ipynb
 Introdução ao Qiskit:
 - Configuração e primeiros passos
 - Criação de circuitos quânticos
@@ -32,7 +52,7 @@ Introdução ao Qiskit:
 - Visualizações de estados quânticos
 - Visualização na Esfera de Bloch
 
-### 02-teletransport.ipynb
+### notebooks/02-teletransport.ipynb
 Protocolo de Teletransporte Quântico:
 - Implementação completa do protocolo de Bennett et al.
 - Criação de estados emaranhados (pares de Bell)
@@ -40,8 +60,9 @@ Protocolo de Teletransporte Quântico:
 - Correções quânticas condicionais
 - Visualizações em Bloch sphere, Q-Sphere e State City
 - Cálculos matemáticos detalhados de cada etapa
+- Visualização 3D interativa customizada (Q-Sphere)
 
-### 03-mais-sobre-Hadamard.md
+### notebooks/03-mais-sobre-Hadamard.md
 Interpretação Física da Porta Hadamard:
 - Conexão entre a porta Hadamard e espelhos semitransparentes (Beam Splitters)
 - Diferença entre comportamento clássico e quântico
@@ -50,7 +71,7 @@ Interpretação Física da Porta Hadamard:
 - Vídeo demonstrativo do experimento real
 - Relação com o Prêmio Nobel de Física de 2022
 
-### 04-Hadamard-experiment.ipynb
+### notebooks/04-Hadamard-experiment.ipynb
 Experimento de Interferência com Hadamard:
 - Simulação do Interferômetro de Mach-Zehnder
 - Aplicação de duas portas Hadamard sequenciais
@@ -59,16 +80,48 @@ Experimento de Interferência com Hadamard:
 - Visualização do circuito quântico completo
 - Comprovação da reversibilidade da porta Hadamard
 
+### notebooks/05-interference.ipynb
+Estudo Avançado de Interferência Quântica:
+- Análise detalhada de padrões de interferência
+- Experimentos com múltiplas portas Hadamard
+- Visualizações interativas de estados quânticos
+
+## 🧰 Módulos Python (src/)
+
+### src/quantum_viz.py
+Módulo de visualizações interativas 3D para estados quânticos:
+
+**Funções principais:**
+- `plot_qsphere_interactive(statevector, auto_open=True, output_file='qsphere_interativa.html')`
+  - Cria Q-Sphere 3D interativa usando Plotly
+  - Visualiza amplitudes, fases e probabilidades
+  - Sistema de coordenadas cartesianas 3D
+  - Labels automáticos para estados significativos
+  - Exportação HTML para navegador
+
+**Exemplo de uso:**
+```python
+from quantum_viz import plot_qsphere_interactive
+from qiskit.quantum_info import Statevector
+
+# Criar estado de Bell
+state = Statevector([1/np.sqrt(2), 0, 0, 1/np.sqrt(2)])
+fig = plot_qsphere_interactive(state, output_file='bell_state.html')
+```
+
 ## 🛠️ Tecnologias Utilizadas
 
 - **Python 3.14+**
 - **Qiskit 2.x** - Framework de computação quântica da IBM
 - **Qiskit Aer** - Simuladores de alta performance
+- **Plotly 5.x** - Visualizações 3D interativas (Q-Sphere customizada)
 - **Matplotlib** - Visualizações de circuitos e estados quânticos
 - **NumPy** - Computação numérica
 - **SymPy** - Matemática simbólica
 - **Seaborn** - Visualizações estatísticas
 - **Jupyter** - Ambiente de notebook interativo
+- **ipywidgets** - Widgets interativos para notebooks
+- **Kaleido** - Exportação de gráficos Plotly
 
 ## 🚀 Como Usar
 
@@ -99,16 +152,24 @@ uv sync
 source .venv/bin/activate
 ```
 
-4. Inicie o Jupyter:
+4. Inicie o Jupyter (a partir da raiz do projeto):
 ```bash
-jupyter notebook
+jupyter notebook notebooks/
 ```
+
+**Nota:** Os notebooks estão configurados para importar módulos da pasta `src/`. Certifique-se de executar o Jupyter a partir da raiz do projeto.
 
 ## 📊 Recursos Visuais
 
 Os notebooks incluem múltiplas formas de visualização:
 
-- **Circuitos Quânticos**: Diagramas de circuitos estilo IBM
+- **Circuito Interativa (Customizada)**: Visualização 3D interativa com Plotly
+  - Setas coloridas por fase (magenta = +, ciano = -)
+  - Sistema de coordenadas cartesianas 3D (X, Y, Z)
+  - Labels automáticos para estados significativos
+  - Informações detalhadas no hover
+  - Controles interativos (rotação, zoom, pan)
+- **Q-Sphere (Qiskit)**: Visualização padr Diagramas de circuitos estilo IBM
 - **Esfera de Bloch**: Representação geométrica de qubits
 - **Q-Sphere**: Visualização de estados emaranhados
 - **State City**: Visualização 3D da matriz densidade
