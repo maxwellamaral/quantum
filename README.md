@@ -290,7 +290,7 @@ Contribuições são bem-vindas! Sinta-se à vontade para:
   - Fundações fundamentais para computação e comunicação quântica[^9]
 
 
-### **4. Documentação Qiskit **
+### **4. Documentação Qiskit**
 
 **Referência:** [Qiskit Documentation](https://qiskit.org/documentation/)
 
