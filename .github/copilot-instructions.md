@@ -82,6 +82,7 @@ jupyter notebook notebooks/
 - **Dual-platform**: Código deve funcionar em Jupyter E no IBM Quantum Platform
 - **Rigor matemático**: Equações LaTeX alinhadas com implementação
 - **Referências físicas**: Conectar abstração quântica com hardware real (fótons, beam splitters)
+- **Documentação completa**: Docstrings, comentários e README atualizados
 
 ## ⚠️ Armadilhas Comuns
 
