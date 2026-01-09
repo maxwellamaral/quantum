@@ -13,7 +13,7 @@ Este repositório contém notebooks Jupyter interativos que exploram conceitos f
 - Fornecer explicações matemáticas detalhadas junto com código executável
 - Servir como material didático para quem está aprendendo computação quântica
 
-🤖 Declaração de Uso de IA e Integridade
+## 🤖 Declaração de Uso de IA e Integridade
 
 Este projeto adota uma abordagem transparente quanto ao uso de tecnologias de Inteligência Artificial no desenvolvimento de software, em conformidade com as boas práticas de integridade acadêmica e científica.
 
