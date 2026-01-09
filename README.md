@@ -24,12 +24,12 @@ Este projeto adota uma abordagem transparente quanto ao uso de tecnologias de In
 **Compromisso de Autoria e Validação:**
 Embora ferramentas de IA tenham sido empregadas, a integridade do projeto é garantida pelos seguintes pilares de validação humana:
 
-1. Ideação e Pedagogia: A estrutura didática, a sequência lógica dos tópicos e as explicações conceituais são de autoria intelectual humana.
-2. Engenharia de Software: Todos os códigos gerados passaram por:
+1. **Ideação e Pedagogia:** A estrutura didática, a sequência lógica dos tópicos e as explicações conceituais são de autoria intelectual humana.
+2. **Engenharia de Software**: Todos os códigos gerados passaram por:
    - Análise de requisitos e adequação pedagógica.
    - Testes funcionais automatizados para garantir a corretude dos algoritmos quânticos.
    - Revisão manual para assegurar a aderência aos conceitos físicos da Mecânica Quântica.
-3. Responsabilidade: O autor assume total responsabilidade pela funcionalidade, segurança e exatidão do material didático aqui apresentado.
+3. **Responsabilidade**: O autor assume total responsabilidade pela funcionalidade, segurança e exatidão do material didático aqui apresentado.
 
 ## 📂 Estrutura do Projeto
 
