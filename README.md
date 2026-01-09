@@ -13,7 +13,25 @@ Este repositório contém notebooks Jupyter interativos que exploram conceitos f
 - Fornecer explicações matemáticas detalhadas junto com código executável
 - Servir como material didático para quem está aprendendo computação quântica
 
-## � Estrutura do Projeto
+🤖 Declaração de Uso de IA e Integridade
+
+Este projeto adota uma abordagem transparente quanto ao uso de tecnologias de Inteligência Artificial no desenvolvimento de software, em conformidade com as boas práticas de integridade acadêmica e científica.
+
+**Ferramentas Utilizadas:**
+
+* Github Copilot & Google Antigravity: Utilizados para auxílio na geração de código (boilerplate), otimização de sintaxe e sugestões de implementação.
+
+**Compromisso de Autoria e Validação:**
+Embora ferramentas de IA tenham sido empregadas, a integridade do projeto é garantida pelos seguintes pilares de validação humana:
+
+1. Ideação e Pedagogia: A estrutura didática, a sequência lógica dos tópicos e as explicações conceituais são de autoria intelectual humana.
+2. Engenharia de Software: Todos os códigos gerados passaram por:
+   - Análise de requisitos e adequação pedagógica.
+   - Testes funcionais automatizados para garantir a corretude dos algoritmos quânticos.
+   - Revisão manual para assegurar a aderência aos conceitos físicos da Mecânica Quântica.
+3. Responsabilidade: O autor assume total responsabilidade pela funcionalidade, segurança e exatidão do material didático aqui apresentado.
+
+## 📂 Estrutura do Projeto
 
 ```
 quantum/
@@ -310,7 +328,7 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 
 ## 📝 Como Citar
 
-Se você utilizar este material em seu trabalho acadêmico ou educacional, por favor cite:
+Ao utilizar ou adaptar este material didático e seus códigos, solicita-se a citação do autor, reconhecendo o trabalho de estruturação pedagógica, curadoria de conteúdo e validação de engenharia realizado:
 
 ```bibtex
 @misc{amaral2026quantum,
@@ -318,7 +336,7 @@ Se você utilizar este material em seu trabalho acadêmico ou educacional, por f
   title        = {Quantum Computing com Qiskit: Material Educacional de Computação Quântica},
   year         = {2026},
   howpublished = {\url{https://github.com/maxwellamaral/quantum}},
-  note         = {Projeto educacional com notebooks interativos sobre computação quântica usando Qiskit}
+  note         = {Projeto educacional com notebooks interativos desenvolvido com apoio de IA e validação humana integral sobre computação quântica usando Qiskit}
 }
 ```
 
