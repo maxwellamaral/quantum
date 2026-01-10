@@ -37,6 +37,8 @@ Embora ferramentas de IA tenham sido empregadas, a integridade do projeto é gar
 quantum/
 ├── notebooks/          # Notebooks Jupyter educacionais
 │   ├── 00-math.ipynb
+│   ├── 00a-math.ipynb
+│   ├── 00b-phases.ipynb
 │   ├── 01-intro.ipynb
 │   ├── 02-teletransport.ipynb
 │   ├── 03-mais-sobre-Hadamard.md
@@ -54,11 +56,37 @@ quantum/
 ## 📖 Notebooks Disponíveis
 
 ### notebooks/00-math.ipynb
-Fundamentos matemáticos para computação quântica:
+Fundamentos matemáticos para computação quântica (versão original completa):
 - Álgebra linear
 - Números complexos
 - Produto tensorial
 - Notação de Dirac
+- Estados quânticos e portas básicas
+- Fases quânticas
+
+### notebooks/00a-math.ipynb
+Fundamentos Matemáticos Reorganizados:
+- **Estados quânticos básicos**: |0⟩, |1⟩ e notação de Dirac
+- **Representação vetorial**: Vetores coluna e amplitudes
+- **Superposição**: Estados |+⟩ e |−⟩
+- **Portas quânticas fundamentais**: X, H, Z
+- **Produto tensorial**: Estados de múltiplos qubits
+- **Porta CNOT**: Emaranhamento e estados de Bell
+- **Medição e probabilidades**: Born Rule
+- **Implementações práticas**: NumPy e SymPy
+
+### notebooks/00b-phases.ipynb
+Fases Quânticas - Conceitos Avançados:
+- **Fase quântica**: Fundamento da interferência quântica
+- **Fase global vs. fase relativa**: Diferenças e observabilidade
+- **Estados com fases diferentes**: |+⟩, |−⟩, |i+⟩, |i−⟩
+- **Portas de fase**:
+  - **Porta Z**: Adiciona 180° de fase ao |1⟩
+  - **Porta S**: Adiciona 90° de fase ao |1⟩
+  - **Porta T**: Adiciona 45° de fase ao |1⟩
+- **Visualizações na Esfera de Bloch**: Estados com diferentes fases
+- **Estados de Bell com fases**: Impacto da fase no emaranhamento
+- **Aplicações práticas**: Base para algoritmos quânticos
 
 ### notebooks/01-intro.ipynb
 Introdução ao Qiskit:
@@ -127,10 +155,75 @@ Experimento de Interferência com Hadamard:
 - Comprovação da reversibilidade da porta Hadamard
 
 ### notebooks/05-interference.ipynb
-Estudo Avançado de Interferência Quântica:
-- Análise detalhada de padrões de interferência
-- Experimentos com múltiplas portas Hadamard
-- Visualizações interativas de estados quânticos
+Interferência Quântica e Algoritmo de Deutsch-Jozsa:
+- **Phase Kickback (Retrocesso de Fase)**: Demonstração detalhada do mecanismo fundamental
+  - Preparação de estados |+⟩ e |−⟩
+  - Aplicação de CNOT e análise da transferência de fase
+  - Visualizações em Q-Sphere e Esfera de Bloch
+  - Cálculos matemáticos passo a passo
+- **Problema Clássico vs Quântico**: Análise comparativa de eficiência
+  - Implementação clássica (força bruta)
+  - Vantagem quântica exponencial
+- **Algoritmo de Deutsch-Jozsa**: Implementação completa
+  - Construção passo a passo do circuito quântico
+  - Oráculos balanceados e constantes
+  - Análise de interferência quântica
+  - Experimento interativo com n=15 bits
+  - Demonstração da determinação definitiva com 1 consulta
+
+#### 🔧 notebooks/05-kickback.qasm
+**Implementação OpenQASM do Phase Kickback**
+
+Arquivo QASM complementar ao notebook, demonstrando o mecanismo de Phase Kickback:
+
+- **Formato**: OpenQASM 2.0 (padrão da indústria)
+- **Uso no IBM Quantum Platform**:
+  - ✅ Importação direta no [IBM Quantum Composer](https://quantum.ibm.com/composer)
+  - ✅ Execução em simuladores quânticos (ex: `ibmq_qasm_simulator`)
+  - ✅ Execução em **hardware quântico real** da IBM
+  - ✅ Visualização gráfica do circuito
+  - ✅ Análise de resultados com histogramas
+
+- **Circuito implementado**: 2 qubits demonstrando transformação |+⟩→|−⟩ via CNOT
+- **Resultado esperado**: Medição de '1' com 100% de probabilidade (interferência destrutiva)
+- **Educacional**: Demonstração visual do conceito de phase kickback
+
+**Como usar**:
+1. Acesse [quantum.ibm.com/composer](https://quantum.ibm.com/composer)
+2. Importe o arquivo `05-kickback.qasm`
+3. Execute no simulador ou hardware real
+4. Observe a medição determinística!
+
+#### 🔧 notebooks/05-deutsch-jozsa.qasm
+**Implementação OpenQASM do Algoritmo de Deutsch-Jozsa**
+
+Arquivo QASM complementar ao notebook, implementação completa do algoritmo:
+
+- **Formato**: OpenQASM 2.0 (padrão da indústria)
+- **Uso no IBM Quantum Platform**:
+  - ✅ Importação direta no [IBM Quantum Composer](https://quantum.ibm.com/composer)
+  - ✅ Execução em simuladores quânticos
+  - ✅ Execução em **hardware quântico real** da IBM
+  - ✅ Comparação entre oráculos balanceados e constantes
+  - ✅ Demonstração da vantagem quântica
+
+- **Circuito implementado**: 4 qubits (3 entrada + 1 auxiliar) para n=3
+- **Oráculo configurado**: Balanceado (3 CNOTs)
+- **Resultado esperado**: 
+  - Oráculo balanceado: medição ≠ '000'
+  - Oráculo constante: medição = '000'
+- **Vantagem**: 1 consulta quântica vs até 5 consultas clássicas
+- **Comentários detalhados**: Cada etapa do algoritmo explicada
+- **Educacional**: Ideal para demonstrações e experimentos
+
+**Como usar**:
+1. Acesse [quantum.ibm.com/composer](https://quantum.ibm.com/composer)
+2. Importe o arquivo `05-deutsch-jozsa.qasm`
+3. Execute com oráculo balanceado (padrão)
+4. Teste oráculo constante (comentar CNOTs, descomentar X ou I)
+5. Compare resultados: determinação definitiva em 1 consulta!
+
+**Nota**: Em hardware real, resultados podem variar devido a ruído quântico - uma excelente oportunidade para estudar os desafios práticos da computação quântica!
 
 ## 🧰 Módulos Python (src/)
 

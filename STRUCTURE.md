@@ -6,11 +6,16 @@
 quantum/
 ├── notebooks/          # 📚 Notebooks Jupyter educacionais
 │   ├── 00-math.ipynb
+│   ├── 00a-math.ipynb
+│   ├── 00b-phases.ipynb
 │   ├── 01-intro.ipynb
 │   ├── 02-teletransport.ipynb
+│   ├── 02-teletransport.qasm
 │   ├── 03-mais-sobre-Hadamard.md
 │   ├── 04-Hadamard-experiment.ipynb
-│   └── 05-interference.ipynb
+│   ├── 05-interference.ipynb
+│   ├── 05-kickback.qasm
+│   └── 05-deutsch-jozsa.qasm
 │
 ├── src/                # 🧰 Módulos Python reutilizáveis
 │   ├── __init__.py
@@ -101,13 +106,18 @@ fig = plot_qsphere_interactive(state)
    - `notebooks/` - Todos os notebooks educacionais
    - `src/` - Módulos Python reutilizáveis
 
-2. **Arquivos movidos**:
+2. **Arquivos movidos/criados**:
    - `00-math.ipynb` → `notebooks/00-math.ipynb`
+   - `00a-math.ipynb` → `notebooks/00a-math.ipynb` (reorganização)
+   - `00b-phases.ipynb` → `notebooks/00b-phases.ipynb` (novo - fases quânticas)
    - `01-intro.ipynb` → `notebooks/01-intro.ipynb`
    - `02-teletransport.ipynb` → `notebooks/02-teletransport.ipynb`
+   - `02-teletransport.qasm` → `notebooks/02-teletransport.qasm`
    - `03-mais-sobre-Hadamard.md` → `notebooks/03-mais-sobre-Hadamard.md`
    - `04-Hadamard-experiment.ipynb` → `notebooks/04-Hadamard-experiment.ipynb`
    - `05-interference.ipynb` → `notebooks/05-interference.ipynb`
+   - `05-kickback.qasm` → `notebooks/05-kickback.qasm`
+   - `05-deutsch-jozsa.qasm` → `notebooks/05-deutsch-jozsa.qasm`
    - `quantum_viz.py` → `src/quantum_viz.py`
 
 3. **Atualizações**:
