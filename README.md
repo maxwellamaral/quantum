@@ -366,15 +366,15 @@ jupyter notebook notebooks/
 
 Os notebooks incluem múltiplas formas de visualização:
 
-- **Circuito Interativa (Customizada)**: Visualização 3D interativa com Plotly
+- **Q-Sphere Customizada**: Visualização 3D interativa com Plotly
   - Setas coloridas por fase (magenta = +, ciano = -)
   - Sistema de coordenadas cartesianas 3D (X, Y, Z)
   - Labels automáticos para estados significativos
   - Informações detalhadas no hover
   - Controles interativos (rotação, zoom, pan)
-- **Q-Sphere (Qiskit)**: Visualização padr Diagramas de circuitos estilo IBM
-- **Esfera de Bloch**: Representação geométrica de qubits
-- **Q-Sphere**: Visualização de estados emaranhados
+- **Diagramas de circuitos**: Estilo IBM Quantum
+- **Esfera de Bloch**: Representação geométrica de qubits individuais
+- **Q-Sphere (Qiskit)**: Visualização padrão de estados emaranhados
 - **State City**: Visualização 3D da matriz densidade
 - **Histogramas**: Distribuição de probabilidades de medições
 
@@ -473,7 +473,19 @@ Contribuições são bem-vindas! Sinta-se à vontade para:
   - Computação quântica por medição
 - Acessível a qualquer pessoa com formação sólida em matemática, ciência da computação ou física[^6]
 
-### **3. Aspect, Clauser & Zeilinger (2022) - Prêmio Nobel de Física**
+### **3. Grover (1996) - Algoritmo de Busca Quântica**
+
+**Referência completa:** Grover, L. K. (1996). "A fast quantum mechanical algorithm for database search." *Proceedings of the 28th Annual ACM Symposium on Theory of Computing (STOC '96)*, 212-219. DOI: 10.1145/237814.237866
+
+**Informações principais:**
+- Publicado em 1996 no STOC (Symposium on Theory of Computing)
+- Propõe algoritmo de busca quântica com complexidade O(√N)
+- Melhoria quadrática sobre algoritmos clássicos O(N)
+- Base teórica para buscas em bancos de dados não-estruturados
+- Aplicações em otimização, criptografia e machine learning quântico
+- Um dos algoritmos quânticos mais importantes junto com Shor e Deutsch-Jozsa
+
+### **4. Aspect, Clauser & Zeilinger (2022) - Prêmio Nobel de Física**
 
 **Referência:** Aspect, A., Clauser, J. F., & Zeilinger, A. (2022). *Nobel Prize in Physics - Experiments with entangled photons and violation of Bell inequalities*[^8][^9]
 
@@ -491,7 +503,7 @@ Contribuições são bem-vindas! Sinta-se à vontade para:
   - Fundações fundamentais para computação e comunicação quântica[^9]
 
 
-### **4. Documentação Qiskit**
+### **5. Documentação Qiskit**
 
 **Referência:** [Qiskit Documentation](https://qiskit.org/documentation/)
 
@@ -532,7 +544,7 @@ https://github.com/maxwellamaral/quantum
 **Formato ABNT**:
 ```
 AMARAL, Maxwell Anderson Ielpo. Quantum Computing com Qiskit: Material Educacional de Computação Quântica. 
-2026. Disponível em: https://github.com/maxwellamaral/quantum. Acesso em: 08 jan. 2026.
+2026. Disponível em: https://github.com/maxwellamaral/quantum. Acesso em: 10 jan. 2026.
 ```
 
 ### Notas de Rodapé
