@@ -15,7 +15,9 @@ quantum/
 │   ├── 04-Hadamard-experiment.ipynb
 │   ├── 05-interference.ipynb
 │   ├── 05-kickback.qasm
-│   └── 05-deutsch-jozsa.qasm
+│   ├── 05-deutsch-jozsa.qasm
+│   ├── 06-grover.ipynb
+│   └── 06-grover.qasm
 │
 ├── src/                # 🧰 Módulos Python reutilizáveis
 │   ├── __init__.py
@@ -118,6 +120,8 @@ fig = plot_qsphere_interactive(state)
    - `05-interference.ipynb` → `notebooks/05-interference.ipynb`
    - `05-kickback.qasm` → `notebooks/05-kickback.qasm`
    - `05-deutsch-jozsa.qasm` → `notebooks/05-deutsch-jozsa.qasm`
+   - `06-grover.ipynb` → `notebooks/06-grover.ipynb` (novo - Algoritmo de Grover)
+   - `06-grover.qasm` → `notebooks/06-grover.qasm` (novo - implementação OpenQASM)
    - `quantum_viz.py` → `src/quantum_viz.py`
 
 3. **Atualizações**:

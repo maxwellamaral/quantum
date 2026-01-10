@@ -41,9 +41,14 @@ quantum/
 │   ├── 00b-phases.ipynb
 │   ├── 01-intro.ipynb
 │   ├── 02-teletransport.ipynb
+│   ├── 02-teletransport.qasm
 │   ├── 03-mais-sobre-Hadamard.md
 │   ├── 04-Hadamard-experiment.ipynb
-│   └── 05-interference.ipynb
+│   ├── 05-interference.ipynb
+│   ├── 05-kickback.qasm
+│   ├── 05-deutsch-jozsa.qasm
+│   ├── 06-grover.ipynb
+│   └── 06-grover.qasm
 ├── src/                # Módulos Python reutilizáveis
 │   ├── __init__.py
 │   └── quantum_viz.py  # Funções de visualização interativa
@@ -225,6 +230,65 @@ Arquivo QASM complementar ao notebook, implementação completa do algoritmo:
 
 **Nota**: Em hardware real, resultados podem variar devido a ruído quântico - uma excelente oportunidade para estudar os desafios práticos da computação quântica!
 
+### notebooks/06-grover.ipynb
+Algoritmo de Grover - Busca Quântica:
+- **Introdução ao Algoritmo**: Comparação entre busca clássica e quântica
+- **Mecanismo de Amplificação de Amplitude**: 
+  - Oráculo (Marcação): Inversão de fase do estado alvo
+  - Difusor (Inversão sobre a Média): Amplificação da probabilidade
+- **Implementação Prática**: Busca do estado |11⟩ em 2 qubits
+  - Construção passo a passo do circuito
+  - Oráculo customizado para diferentes estados alvo
+  - Função difusor de Grover
+- **Análise Matemática Detalhada**:
+  - Cálculo completo do difusor para 2 qubits
+  - Matriz de difusão $D = 2|s\rangle\langle s| - I$
+  - Multiplicação matricial passo a passo
+  - Interpretação física da inversão sobre a média
+  - Tabela de transformação de amplitudes
+- **Desafio Prático**: Modificar oráculo para encontrar |00⟩
+- **Visualizações**: Circuitos quânticos, Esfera de Bloch, Q-Sphere
+- **Vantagem Quântica**: Aceleração quadrática ($\sqrt{N}$ vs $N/2$)
+- **Resultado**: 100% de precisão para 2 qubits em 1 iteração
+
+#### 🔧 notebooks/06-grover.qasm
+**Implementação OpenQASM do Algoritmo de Grover**
+
+Arquivo QASM complementar ao notebook, pronto para uso no **IBM Quantum Composer**:
+
+- **Formato**: OpenQASM 3.0 (versão mais recente)
+- **Uso no IBM Quantum Platform**:
+  - ✅ Importação direta no [IBM Quantum Composer](https://quantum.ibm.com/composer)
+  - ✅ Execução em simuladores quânticos (ex: `ibmq_qasm_simulator`)
+  - ✅ Execução em **hardware quântico real** da IBM
+  - ✅ Visualização gráfica do circuito
+  - ✅ Análise de resultados com histogramas
+  - ✅ Demonstração da busca quântica em ação
+
+- **Circuito implementado**: 2 qubits buscando o estado |11⟩
+- **Componentes**:
+  - Inicialização: Portas H para superposição uniforme
+  - Oráculo: Porta CZ para marcar |11⟩
+  - Difusor: Sequência H-X-CZ-X-H para amplificação
+  - Medição: Registro de 2 bits clássicos
+- **Resultado esperado**: Medição de '11' com ~100% de probabilidade
+- **Comentários detalhados**: Cada etapa do algoritmo explicada no código
+- **Educacional**: Ideal para demonstrações de busca quântica
+
+**Como usar**:
+1. Acesse [quantum.ibm.com/composer](https://quantum.ibm.com/composer)
+2. Clique em "Import QASM" ou "Open QASM"
+3. Faça upload do arquivo `06-grover.qasm`
+4. Escolha o backend (simulador ou hardware real)
+5. Execute e veja o algoritmo encontrar o estado correto!
+
+**Variações possíveis**:
+- Modificar o oráculo para buscar |00⟩, |01⟩ ou |10⟩
+- Adicionar mais qubits para espaços de busca maiores
+- Comparar com busca clássica (múltiplas consultas)
+
+**Nota**: Em hardware real, a taxa de sucesso será ligeiramente menor que 100% devido a ruído quântico, decoerência e imperfeições dos qubits - uma excelente demonstração dos desafios práticos da computação quântica!
+
 ## 🧰 Módulos Python (src/)
 
 ### src/quantum_viz.py
@@ -316,35 +380,61 @@ Os notebooks incluem múltiplas formas de visualização:
 
 ## 🎓 Conceitos Abordados
 
-### Fundamentos
-- Superposição quântica
-- Emaranhamento quântico
-- Medição e colapso de estado
-- Portas quânticas (X, H, CNOT, CZ)
-- Interferência quântica (construtiva e destrutiva)
-- Beam Splitters e interpretação física de portas quânticas
+### Fundamentos de Mecânica Quântica
+- **Superposição quântica**: Estados |+⟩ e |−⟩
+- **Emaranhamento quântico**: Estados de Bell e correlações não-locais
+- **Medição e colapso de estado**: Born Rule e probabilidades quânticas
+- **Interferência quântica**: Construtiva e destrutiva
+- **Fases quânticas**: 
+  - Fase global vs. fase relativa
+  - Estados com fases diferentes (|i+⟩, |i−⟩)
+  - Observabilidade e efeitos físicos
+- **Phase Kickback**: Transferência de fase entre qubits
 
-### Protocolos
-- Teletransporte 
-- Interferômetro de Mach-ZehnderQuântico (Bennett et al., 1993)
-- Preparação de estados de Bell
-- Medição de Bell
+### Portas Quânticas
+- **Portas de Pauli**: X (NOT), Y, Z
+- **Porta Hadamard (H)**: Criação de superposição
+- **Portas de fase**: S (π/2), T (π/4)
+- **Portas controladas**: CNOT, CZ
+- **Interpretação física**: Beam splitters e interferômetros
 
-### Matemática
-- Estados quânticos e vetores de estado (ket notation)
-- Operadores unitários e matrizes
-- Produto tensorial de estados
-- Probabilidades quânticas
+### Protocolos e Algoritmos Quânticos
+- **Teletransporte Quântico** (Bennett et al., 1993):
+  - Preparação de estados de Bell
+  - Medição de Bell
+  - Comunicação clássica e correções condicionais
+- **Algoritmo de Deutsch-Jozsa**:
+  - Oráculo quântico
+  - Interferência quântica global
+  - Vantagem quântica exponencial (1 consulta vs N/2)
+- **Algoritmo de Grover**:
+  - Busca quântica não-estruturada
+  - Oráculo de marcação (inversão de fase)
+  - Difusor de Grover (inversão sobre a média)
+  - Vantagem quântica quadrática (√N vs N/2)
 
-## 📝 Estrutura do Teletransporte Quântico
+### Experimentos e Demonstrações
+- **Interferômetro de Mach-Zehnder**: Interpretação física da porta Hadamard
+- **Experimentos de interferência**: Visualização de fase e amplitude
+- **Beam Splitters quânticos**: Conexão com óptica quântica
+- **Prêmio Nobel de Física 2022**: Emaranhamento e desigualdades de Bell
 
-O protocolo implementado segue estas etapas:
+### Matemática Quântica
+- **Notação de Dirac**: Kets (|ψ⟩) e bras (⟨ψ|)
+- **Vetores de estado**: Representação em base computacional
+- **Operadores unitários**: Matrizes e transformações reversíveis
+- **Produto tensorial**: Estados de múltiplos qubits (|ψ⟩ ⊗ |φ⟩)
+- **Produto interno e externo**: ⟨ψ|φ⟩ e |ψ⟩⟨φ|
+- **Projetores**: Operadores de medição e difusão
+- **Born Rule**: Cálculo de probabilidades (P = |⟨i|ψ⟩|²)
+- **Amplitudes e fases**: Representação polar de números complexos
 
-1. **Preparação**: Alice cria o estado a ser teletransportado
-2. **Emaranhamento**: Criação do par de Bell entre Alice e Bob
-3. **Medição de Bell**: Alice entrelaça seu qubit com o par de Bell
-4. **Comunicação Clássica**: Alice envia 2 bits clássicos para Bob
-5. **Correção**: Bob aplica portas condicionais para recuperar o estado original
+### Visualizações e Ferramentas
+- **Esfera de Bloch**: Representação geométrica de 1 qubit
+- **Q-Sphere**: Visualização de estados multi-qubit
+- **State City**: Representação 3D da matriz densidade
+- **Histogramas**: Distribuição de probabilidades de medição
+- **Circuitos quânticos**: Diagramas de portas e operações
 
 ## 🤝 Contribuindo
 
