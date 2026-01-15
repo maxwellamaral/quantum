@@ -11,3 +11,5 @@ wheels/
 
 # Others
 backup/
+# MyST build outputs
+_build
