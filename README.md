@@ -1,6 +1,38 @@
 # 🚀 Quantum Computing com Qiskit
 
-Projeto educacional de computação quântica utilizando o framework Qiskit da IBM.
+<div align="center">
+
+![Python](https://img.shields.io/badge/python-3.14+-blue.svg)
+![Qiskit](https://img.shields.io/badge/qiskit-2.x-green.svg)
+![License](https://img.shields.io/badge/license-MIT-orange.svg)
+![Jupyter](https://img.shields.io/badge/jupyter-notebooks-F37626.svg)
+![Status](https://img.shields.io/badge/status-active-success.svg)
+
+**Projeto educacional de computação quântica utilizando o framework Qiskit da IBM**
+
+[Notebooks](#-notebooks-disponíveis) • [Instalação](#-como-usar) • [Conceitos](#-conceitos-abordados) • [Referências](#-referências)
+
+</div>
+
+---
+
+## 📑 Índice
+
+- [📚 Sobre o Projeto](#-sobre-o-projeto)
+- [🤖 Declaração de Uso de IA](#-declaração-de-uso-de-ia-e-integridade)
+- [📂 Estrutura do Projeto](#-estrutura-do-projeto)
+- [📖 Notebooks Disponíveis](#-notebooks-disponíveis)
+- [🧰 Módulos Python](#-módulos-python-src)
+- [🛠️ Tecnologias Utilizadas](#️-tecnologias-utilizadas)
+- [🚀 Como Usar](#-como-usar)
+- [📊 Recursos Visuais](#-recursos-visuais)
+- [🎓 Conceitos Abordados](#-conceitos-abordados)
+- [🤝 Contribuindo](#-contribuindo)
+- [📚 Referências](#-referências)
+- [📄 Licença](#-licença)
+- [📝 Como Citar](#-como-citar)
+
+---
 
 ## 📚 Sobre o Projeto
 
@@ -8,10 +40,10 @@ Este repositório contém notebooks Jupyter interativos que exploram conceitos f
 
 ## 🎯 Objetivos
 
-- Demonstrar conceitos de mecânica quântica de forma visual e interativa
-- Implementar algoritmos e protocolos quânticos usando Qiskit
-- Fornecer explicações matemáticas detalhadas junto com código executável
-- Servir como material didático para quem está aprendendo computação quântica
+✨ **Demonstrar** conceitos de mecânica quântica de forma visual e interativa  
+⚡ **Implementar** algoritmos e protocolos quânticos usando Qiskit  
+📐 **Fornecer** explicações matemáticas detalhadas junto com código executável  
+🎓 **Servir** como material didático para quem está aprendendo computação quântica
 
 ## 🤖 Declaração de Uso de IA e Integridade
 
@@ -19,24 +51,26 @@ Este projeto adota uma abordagem transparente quanto ao uso de tecnologias de In
 
 **Ferramentas Utilizadas:**
 
-* Github Copilot & Google Antigravity: Utilizados para auxílio na geração de código (boilerplate), otimização de sintaxe e sugestões de implementação.
+> 🤖 **Github Copilot & Google Antigravity**: Utilizados para auxílio na geração de código (boilerplate), otimização de sintaxe e sugestões de implementação.
 
 **Compromisso de Autoria e Validação:**
+
 Embora ferramentas de IA tenham sido empregadas, a integridade do projeto é garantida pelos seguintes pilares de validação humana:
 
-1. **Ideação e Pedagogia:** A estrutura didática, a sequência lógica dos tópicos e as explicações conceituais são de autoria intelectual humana.
-2. **Engenharia de Software**: Todos os códigos gerados passaram por:
-   - Análise de requisitos e adequação pedagógica.
-   - Testes funcionais automatizados para garantir a corretude dos algoritmos quânticos.
-   - Revisão manual para assegurar a aderência aos conceitos físicos da Mecânica Quântica.
-3. **Responsabilidade**: O autor assume total responsabilidade pela funcionalidade, segurança e exatidão do material didático aqui apresentado.
+1. 💡 **Ideação e Pedagogia:** A estrutura didática, a sequência lógica dos tópicos e as explicações conceituais são de autoria intelectual humana.
+2. 🔧 **Engenharia de Software**: Todos os códigos gerados passaram por:
+   - ✅ Análise de requisitos e adequação pedagógica
+   - ✅ Testes funcionais automatizados para garantir a corretude dos algoritmos quânticos
+   - ✅ Revisão manual para assegurar a aderência aos conceitos físicos da Mecânica Quântica
+3. 🎯 🎯 **Responsabilidade**: O autor assume total responsabilidade pela funcionalidade, segurança e exatidão do material didático aqui apresentado.
+
+---
 
 ## 📂 Estrutura do Projeto
 
 ```
 quantum/
 ├── notebooks/          # Notebooks Jupyter educacionais
-│   ├── 00-math.ipynb
 │   ├── 00a-math.ipynb
 │   ├── 00b-phases.ipynb
 │   ├── 01-intro.ipynb
@@ -59,30 +93,40 @@ quantum/
 └── pyproject.toml
 ```
 
+---
+
 ## 📖 Notebooks Disponíveis
 
-### notebooks/00-math.ipynb
-Fundamentos matemáticos para computação quântica (versão original completa):
-- Álgebra linear
-- Números complexos
-- Produto tensorial
-- Notação de Dirac
-- Estados quânticos e portas básicas
-- Fases quânticas
+<div align="center">
 
-### notebooks/00a-math.ipynb
-Fundamentos Matemáticos Reorganizados:
-- **Estados quânticos básicos**: |0⟩, |1⟩ e notação de Dirac
-- **Representação vetorial**: Vetores coluna e amplitudes
-- **Superposição**: Estados |+⟩ e |−⟩
-- **Portas quânticas fundamentais**: X, H, Z
-- **Produto tensorial**: Estados de múltiplos qubits
-- **Porta CNOT**: Emaranhamento e estados de Bell
-- **Medição e probabilidades**: Born Rule
-- **Implementações práticas**: NumPy e SymPy
+| 📓 Notebook | 🎯 Tópicos Principais | 📊 Nível |
+|------------|---------------------|----------|
+| **00a-math** | Estados quânticos, portas, produto tensorial | 🟢 Básico |
+| **00b-phases** | Fases quânticas, portas CP, Bloch sphere | 🟡 Intermediário |
+| **01-intro** | Primeiros passos com Qiskit, Bell states | 🟢 Básico |
+| **02-teletransport** | Protocolo de Bennett, medição de Bell | 🟡 Intermediário |
+| **03-Hadamard** | Interpretação física, beam splitters | 🟢 Básico |
+| **04-Hadamard-exp** | Interferômetro de Mach-Zehnder | 🟡 Intermediário |
+| **05-interference** | Phase kickback, Deutsch-Jozsa | 🔴 Avançado |
+| **06-grover** | Busca quântica, amplificação de amplitude | 🔴 Avançado |
+| **07-QFT** | Transformada de Fourier, estimação de fase | 🔴 Avançado |
 
-### notebooks/00b-phases.ipynb
-Fases Quânticas - Conceitos Avançados:
+</div>
+
+### 📘 notebooks/00a-math.ipynb
+**Fundamentos Matemáticos da Computação Quântica** 🟢
+
+- 🔹 **Estados quânticos básicos**: |0⟩, |1⟩ e notação de Dirac
+- 🔹 **Representação vetorial**: Vetores coluna e amplitudes
+- 🔹 **Superposição**: Estados |+⟩ e |−⟩
+- 🔹 **Portas quânticas fundamentais**: X, H, Z
+- 🔹 **Produto tensorial**: Estados de múltiplos qubits
+- 🔹 **Porta CNOT**: Emaranhamento e estados de Bell
+- 🔹 **Medição e probabilidades**: Born Rule
+- 🔹 **Implementações práticas**: NumPy e SymPy
+
+### 📙 notebooks/00b-phases.ipynb
+**Fases Quânticas - Conceitos Gerais** 🟡
 - **Fase quântica**: Fundamento da interferência quântica
 - **Fase global vs. fase relativa**: Diferenças e observabilidade
 - **Estados com fases diferentes**: |+⟩, |−⟩, |i+⟩, |i−⟩
@@ -104,8 +148,8 @@ Fases Quânticas - Conceitos Avançados:
 - **Experimento interativo**: Criação de estados customizados com diferentes fases
 - **Aplicações práticas**: Base para QFT, QPE e algoritmos quânticos avançados
 
-### notebooks/01-intro.ipynb
-Introdução ao Qiskit:
+### 📗 notebooks/01-intro.ipynb
+**Introdução ao Qiskit** 🟢
 - Configuração e primeiros passos
 - Criação de circuitos quânticos
 - Portas quânticas básicas (H, X, CNOT)
@@ -114,8 +158,8 @@ Introdução ao Qiskit:
 - Visualizações de estados quânticos
 - Visualização na Esfera de Bloch
 
-### notebooks/02-teletransport.ipynb
-Protocolo de Teletransporte Quântico:
+### 📕 notebooks/02-teletransport.ipynb
+**Protocolo de Teletransporte Quântico** 🟡
 - Implementação completa do protocolo de Bennett et al.
 - Criação de estados emaranhados (pares de Bell)
 - Medição de Bell
@@ -125,9 +169,9 @@ Protocolo de Teletransporte Quântico:
 - Visualização 3D interativa customizada (Q-Sphere)
 
 #### 🔧 notebooks/02-teletransport.qasm
-**Implementação OpenQASM do Protocolo de Teletransporte**
-
-Arquivo QASM complementar ao notebook, pronto para uso no **IBM Quantum Composer**:
+> **💎 Implementação OpenQASM do Protocolo de Teletransporte**
+>
+> Arquivo QASM complementar ao notebook, pronto para uso no **IBM Quantum Composer**:
 
 - **Formato**: OpenQASM 2.0 (padrão da indústria)
 - **Uso no IBM Quantum Platform**:
@@ -150,10 +194,10 @@ Arquivo QASM complementar ao notebook, pronto para uso no **IBM Quantum Composer
 4. Escolha o backend (simulador ou hardware real)
 5. Execute e analise os resultados!
 
-**Nota**: Em hardware real, a taxa de sucesso será menor que 100% devido a ruído quântico, decoerência e imperfeições dos qubits físicos - uma excelente oportunidade para estudar desafios práticos da computação quântica!
+> **⚠️ Nota**: Em hardware real, a taxa de sucesso será menor que 100% devido a ruído quântico, decoerência e imperfeições dos qubits físicos - uma excelente oportunidade para estudar desafios práticos da computação quântica!
 
-### notebooks/03-mais-sobre-Hadamard.md
-Interpretação Física da Porta Hadamard:
+### 📄 notebooks/03-mais-sobre-Hadamard.md
+**Interpretação Física da Porta Hadamard** 🟢
 - Conexão entre a porta Hadamard e espelhos semitransparentes (Beam Splitters)
 - Diferença entre comportamento clássico e quântico
 - Interferômetro de Mach-Zehnder e interferência quântica
@@ -161,8 +205,8 @@ Interpretação Física da Porta Hadamard:
 - Vídeo demonstrativo do experimento real
 - Relação com o Prêmio Nobel de Física de 2022
 
-### notebooks/04-Hadamard-experiment.ipynb
-Experimento de Interferência com Hadamard:
+### 🔬 notebooks/04-Hadamard-experiment.ipynb
+**Experimento de Interferência com Hadamard** 🟡
 - Simulação do Interferômetro de Mach-Zehnder
 - Aplicação de duas portas Hadamard sequenciais
 - Visualizações em Esfera de Bloch e Q-Sphere após cada operação
@@ -170,8 +214,8 @@ Experimento de Interferência com Hadamard:
 - Visualização do circuito quântico completo
 - Comprovação da reversibilidade da porta Hadamard
 
-### notebooks/05-interference.ipynb
-Interferência Quântica e Algoritmo de Deutsch-Jozsa:
+### 🎯 notebooks/05-interference.ipynb
+**Interferência Quântica e Algoritmo de Deutsch-Jozsa** 🔴
 - **Phase Kickback (Retrocesso de Fase)**: Demonstração detalhada do mecanismo fundamental
   - Preparação de estados |+⟩ e |−⟩
   - Aplicação de CNOT e análise da transferência de fase
@@ -188,9 +232,9 @@ Interferência Quântica e Algoritmo de Deutsch-Jozsa:
   - Demonstração da determinação definitiva com 1 consulta
 
 #### 🔧 notebooks/05-kickback.qasm
-**Implementação OpenQASM do Phase Kickback**
-
-Arquivo QASM complementar ao notebook, demonstrando o mecanismo de Phase Kickback:
+> **⚡ Implementação OpenQASM do Phase Kickback**
+>
+> Arquivo QASM complementar ao notebook, demonstrando o mecanismo de Phase Kickback:
 
 - **Formato**: OpenQASM 2.0 (padrão da indústria)
 - **Uso no IBM Quantum Platform**:
@@ -211,9 +255,9 @@ Arquivo QASM complementar ao notebook, demonstrando o mecanismo de Phase Kickbac
 4. Observe a medição determinística!
 
 #### 🔧 notebooks/05-deutsch-jozsa.qasm
-**Implementação OpenQASM do Algoritmo de Deutsch-Jozsa**
-
-Arquivo QASM complementar ao notebook, implementação completa do algoritmo:
+> **🚀 Implementação OpenQASM do Algoritmo de Deutsch-Jozsa**
+>
+> Arquivo QASM complementar ao notebook, implementação completa do algoritmo:
 
 - **Formato**: OpenQASM 2.0 (padrão da indústria)
 - **Uso no IBM Quantum Platform**:
@@ -241,8 +285,8 @@ Arquivo QASM complementar ao notebook, implementação completa do algoritmo:
 
 **Nota**: Em hardware real, resultados podem variar devido a ruído quântico - uma excelente oportunidade para estudar os desafios práticos da computação quântica!
 
-### notebooks/06-grover.ipynb
-Algoritmo de Grover - Busca Quântica:
+### 🔍 notebooks/06-grover.ipynb
+**Algoritmo de Grover - Busca Quântica** 🔴
 - **Introdução ao Algoritmo**: Comparação entre busca clássica e quântica
 - **Mecanismo de Amplificação de Amplitude**: 
   - Oráculo (Marcação): Inversão de fase do estado alvo
@@ -263,9 +307,9 @@ Algoritmo de Grover - Busca Quântica:
 - **Resultado**: 100% de precisão para 2 qubits em 1 iteração
 
 #### 🔧 notebooks/06-grover.qasm
-**Implementação OpenQASM do Algoritmo de Grover**
-
-Arquivo QASM complementar ao notebook, pronto para uso no **IBM Quantum Composer**:
+> **🎯 Implementação OpenQASM do Algoritmo de Grover**
+>
+> Arquivo QASM complementar ao notebook, pronto para uso no **IBM Quantum Composer**:
 
 - **Formato**: OpenQASM 3.0 (versão mais recente)
 - **Uso no IBM Quantum Platform**:
@@ -300,8 +344,8 @@ Arquivo QASM complementar ao notebook, pronto para uso no **IBM Quantum Composer
 
 **Nota**: Em hardware real, a taxa de sucesso será ligeiramente menor que 100% devido a ruído quântico, decoerência e imperfeições dos qubits - uma excelente demonstração dos desafios práticos da computação quântica!
 
-### notebooks/07-quantum-fourier-transform.ipynb
-Transformada de Fourier Quântica (QFT) e Estimação de Fase Quântica (QPE):
+### 🌊 notebooks/07-quantum-fourier-transform.ipynb
+**Transformada de Fourier Quântica (QFT) e Estimação de Fase (QPE)** 🔴
 - **Transformada de Fourier Quântica (QFT)**: Tradução entre bases computacional e de Fourier
   - Codificação de números binários em rotações de fase
   - Visualização com Esferas de Bloch
@@ -336,18 +380,25 @@ Transformada de Fourier Quântica (QFT) e Estimação de Fase Quântica (QPE):
   - Precisão vs número de qubits
 - **Vantagem sobre Métodos Clássicos**: Medição direta de fases inacessíveis classicamente
 
+---
+
 ## 🧰 Módulos Python (src/)
 
-### src/quantum_viz.py
-Módulo de visualizações interativas 3D para estados quânticos:
+### 📦 src/quantum_viz.py
+**Módulo de visualizações interativas 3D para estados quânticos**
 
-**Funções principais:**
-- `plot_qsphere_interactive(statevector, auto_open=True, output_file='qsphere_interativa.html')`
-  - Cria Q-Sphere 3D interativa usando Plotly
-  - Visualiza amplitudes, fases e probabilidades
-  - Sistema de coordenadas cartesianas 3D
-  - Labels automáticos para estados significativos
-  - Exportação HTML para navegador
+#### Funções principais:
+
+```python
+plot_qsphere_interactive(statevector, auto_open=True, output_file='qsphere_interativa.html')
+```
+
+**Recursos:**
+- 🎨 Cria Q-Sphere 3D interativa usando Plotly
+- 📊 Visualiza amplitudes, fases e probabilidades
+- 🧭 Sistema de coordenadas cartesianas 3D
+- 🏷️ Labels automáticos para estados significativos
+- 💾 Exportação HTML para navegador
 
 **Exemplo de uso:**
 ```python
@@ -359,19 +410,39 @@ state = Statevector([1/np.sqrt(2), 0, 0, 1/np.sqrt(2)])
 fig = plot_qsphere_interactive(state, output_file='bell_state.html')
 ```
 
+---
+
 ## 🛠️ Tecnologias Utilizadas
 
-- **Python 3.14+**
-- **Qiskit 2.x** - Framework de computação quântica da IBM
-- **Qiskit Aer** - Simuladores de alta performance
-- **Plotly 5.x** - Visualizações 3D interativas (Q-Sphere customizada)
-- **Matplotlib** - Visualizações de circuitos e estados quânticos
-- **NumPy** - Computação numérica
-- **SymPy** - Matemática simbólica
-- **Seaborn** - Visualizações estatísticas
-- **Jupyter** - Ambiente de notebook interativo
-- **ipywidgets** - Widgets interativos para notebooks
-- **Kaleido** - Exportação de gráficos Plotly
+<table>
+<tr>
+<td width="50%">
+
+**🔮 Computação Quântica**
+- ![Qiskit](https://img.shields.io/badge/Qiskit-2.x-6929C4?logo=qiskit) Framework IBM
+- ![Qiskit Aer](https://img.shields.io/badge/Qiskit_Aer-Simulators-6929C4) Simuladores de alta performance
+
+**📊 Visualização**
+- ![Plotly](https://img.shields.io/badge/Plotly-5.x-3F4F75?logo=plotly) Gráficos 3D interativos
+- ![Matplotlib](https://img.shields.io/badge/Matplotlib-Latest-11557c) Circuitos e estados
+- ![Seaborn](https://img.shields.io/badge/Seaborn-Latest-9C9EDE) Visualizações estatísticas
+- Kaleido - Exportação de gráficos
+
+</td>
+<td width="50%">
+
+**🐍 Python & Computação**
+- ![Python](https://img.shields.io/badge/Python-3.14+-3776AB?logo=python&logoColor=white) Versão 3.14+
+- ![NumPy](https://img.shields.io/badge/NumPy-Latest-013243?logo=numpy) Computação numérica
+- ![SymPy](https://img.shields.io/badge/SymPy-Latest-3B5526?logo=sympy) Matemática simbólica
+
+**📓 Ambiente Interativo**
+- ![Jupyter](https://img.shields.io/badge/Jupyter-Notebooks-F37626?logo=jupyter) Ambiente interativo
+- ipywidgets - Widgets interativos
+
+</td>
+</tr>
+</table>
 
 ## 🚀 Como Usar
 
@@ -380,20 +451,20 @@ fig = plot_qsphere_interactive(state, output_file='bell_state.html')
 - Python 3.14 ou superior
 - [uv](https://github.com/astral-sh/uv) (gerenciador de pacotes Python moderno)
 
-### Instalação
+### ⚙️ Instalação
 
-1. Clone o repositório:
+#### 1️⃣ Clone o repositório:
 ```bash
 git clone https://github.com/maxwellamaral/quantum.git
 cd quantum
 ```
 
-2. Crie o ambiente virtual e instale as dependências:
+#### 2️⃣ Crie o ambiente virtual e instale as dependências:
 ```bash
 uv sync
 ```
 
-3. Ative o ambiente virtual:
+#### 3️⃣ Ative o ambiente virtual:
 ```bash
 # Windows
 .venv\Scripts\activate
@@ -402,29 +473,33 @@ uv sync
 source .venv/bin/activate
 ```
 
-4. Inicie o Jupyter (a partir da raiz do projeto):
+#### 4️⃣ Inicie o Jupyter (a partir da raiz do projeto):
 ```bash
 jupyter notebook notebooks/
 ```
 
-**Nota:** Os notebooks estão configurados para importar módulos da pasta `src/`. Certifique-se de executar o Jupyter a partir da raiz do projeto.
+> **💡 Nota**: Os notebooks estão configurados para importar módulos da pasta `src/`. Certifique-se de executar o Jupyter a partir da raiz do projeto.
+
+---
 
 ## 📊 Recursos Visuais
 
-Os notebooks incluem múltiplas formas de visualização:
+Os notebooks incluem **múltiplas formas de visualização** para facilitar o entendimento:
 
-- **Q-Sphere Customizada**: Visualização 3D interativa com Plotly
-  - Setas coloridas por fase (magenta = +, ciano = -)
-  - Sistema de coordenadas cartesianas 3D (X, Y, Z)
-  - Labels automáticos para estados significativos
-  - Informações detalhadas no hover
-  - Controles interativos (rotação, zoom, pan)
-- **Diagramas de circuitos**: Estilo IBM Quantum
-- **Esfera de Bloch**: Representação geométrica de qubits individuais
-- **Q-Sphere (Qiskit)**: Visualização padrão de estados emaranhados
-- **State City**: Visualização 3D da matriz densidade
-- **Histogramas**: Distribuição de probabilidades de medições
+#### 🎨 Q-Sphere Customizada (Plotly 3D)
+- ✨ Setas coloridas por fase (magenta = +, ciano = -)
+- 🧭 Sistema de coordenadas cartesianas 3D (X, Y, Z)
+- 🏷️ Labels automáticos para estados significativos
+- 💬 Informações detalhadas no hover
+- 🖱️ Controles interativos (rotação, zoom, pan)
 
+#### 📈 Outras Visualizações
+- 🔌 **Diagramas de circuitos**: Estilo IBM Quantum
+- 🌐 **Esfera de Bloch**: Representação geométrica de qubits individuais
+- ⚛️ **Q-Sphere (Qiskit)**: Visualização padrão de estados emaranhados
+- 🏙️ **State City**: Visualização 3D da matriz densidade
+- 📊 **Histogramas**: Distribuição de probabilidades de medições
+---
 ## 🎓 Conceitos Abordados
 
 ### Fundamentos de Mecânica Quântica
@@ -499,14 +574,17 @@ Os notebooks incluem múltiplas formas de visualização:
 - **Histogramas**: Distribuição de probabilidades de medição
 - **Circuitos quânticos**: Diagramas de portas e operações
 
+---
+
 ## 🤝 Contribuindo
 
-Contribuições são bem-vindas! Sinta-se à vontade para:
-- Reportar bugs
-- Sugerir novos notebooks ou tópicos
-- Melhorar explicações ou visualizações
-- Corrigir erros matemáticos ou de código
+**Contribuições são bem-vindas!** Sinta-se à vontade para:
 
+- 🐛 Reportar bugs
+- 💡 Sugerir novos notebooks ou tópicos
+- ✨ Melhorar explicações ou visualizações
+- 🔧 Corrigir erros matemáticos ou de código
+---
 ## 📚 Referências
 
 ### **1. Bennett et al. (1993) - Teletransporte Quântico**
@@ -580,9 +658,11 @@ Contribuições são bem-vindas! Sinta-se à vontade para:
 
 ## 📄 Licença
 
-Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Este projeto está licenciado sob a **Licença MIT** - veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-**Importante**: Ao utilizar este material, por favor, referencie a autoria conforme a seção de citação abaixo.
+> **⚠️ Importante**: Ao utilizar este material, por favor, referencie a autoria conforme a seção de citação abaixo.
+
+---
 
 ## 📝 Como Citar
 
