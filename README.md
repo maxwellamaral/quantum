@@ -48,7 +48,8 @@ quantum/
 │   ├── 05-kickback.qasm
 │   ├── 05-deutsch-jozsa.qasm
 │   ├── 06-grover.ipynb
-│   └── 06-grover.qasm
+│   ├── 06-grover.qasm
+│   └── 07-quantum-fourier-transform.ipynb
 ├── src/                # Módulos Python reutilizáveis
 │   ├── __init__.py
 │   └── quantum_viz.py  # Funções de visualização interativa
@@ -91,7 +92,17 @@ Fases Quânticas - Conceitos Avançados:
   - **Porta T**: Adiciona 45° de fase ao |1⟩
 - **Visualizações na Esfera de Bloch**: Estados com diferentes fases
 - **Estados de Bell com fases**: Impacto da fase no emaranhamento
-- **Aplicações práticas**: Base para algoritmos quânticos
+- **Porta CP (Controlled-Phase)**:
+  - **Definição e matriz**: Porta quântica de dois qubits que adiciona fase condicional
+  - **Implementação com NumPy**: Função `cphase_gate(theta)` para cálculos diretos
+  - **Visualização com Bloch Spheres**: Estados antes e depois da aplicação de CP
+  - **Convenção little-endian**: Explicação pedagógica sobre ordenação de qubits no Qiskit
+  - **Produto tensorial (np.kron)**: Detalhamento da construção de estados multi-qubit
+  - **Implementação com Qiskit**: Uso de `qc.cp(theta, control, target)` em circuitos
+  - **Comparação NumPy vs Qiskit**: Validação numérica entre implementações
+  - **Casos especiais**: CP(π) = CZ, CP(π/2) = CS, CP(π/4) = CT
+- **Experimento interativo**: Criação de estados customizados com diferentes fases
+- **Aplicações práticas**: Base para QFT, QPE e algoritmos quânticos avançados
 
 ### notebooks/01-intro.ipynb
 Introdução ao Qiskit:
@@ -289,6 +300,42 @@ Arquivo QASM complementar ao notebook, pronto para uso no **IBM Quantum Composer
 
 **Nota**: Em hardware real, a taxa de sucesso será ligeiramente menor que 100% devido a ruído quântico, decoerência e imperfeições dos qubits - uma excelente demonstração dos desafios práticos da computação quântica!
 
+### notebooks/07-quantum-fourier-transform.ipynb
+Transformada de Fourier Quântica (QFT) e Estimação de Fase Quântica (QPE):
+- **Transformada de Fourier Quântica (QFT)**: Tradução entre bases computacional e de Fourier
+  - Codificação de números binários em rotações de fase
+  - Visualização com Esferas de Bloch
+  - Exemplo prático: número 6 (binário 110)
+  - Interpretação: "máquina de tradução" entre digital e ondulatório
+- **Analogia do Relógio**: Representação intuitiva de fases
+  - Base computacional: switches 0/1 (digital)
+  - Base de Fourier: ângulos de rotação (analógico)
+  - Frequência de rotação codifica o valor do número
+- **Visualizações Detalhadas**:
+  - Estados antes e depois da QFT
+  - Amplitudes complexas e suas fases
+  - Coordenadas de Bloch de cada qubit
+- **QFT Inversa**: Tradução de rotações para bits
+- **Estimação de Fase Quântica (QPE)**: "Velocímetro Quântico"
+  - Problema: medir fase θ de uma porta U sem destruí-la
+  - Solução: Phase Kickback + QFT Inversa
+  - Implementação prática: estimar fase 1/8 (45°)
+  - Precisão limitada pelos qubits de contagem (n qubits → 1/2ⁿ)
+- **Algoritmo Completo**:
+  - Preparação: qubits em superposição
+  - Aplicação controlada de U com potências crescentes (U¹, U², U⁴...)
+  - Decodificação: QFT Inversa traduz fases para binário
+  - Medição: resultado é a fase em fração binária
+- **Conexão com Algoritmo de Shor**:
+  - QPE é o "motor" da fatoração quântica
+  - Transforma problema de encontrar período em estimar fase
+  - Base para quebra de criptografia RSA
+- **Análise Matemática**:
+  - Truque da potência (repetições *= 2)
+  - Decomposição em frequências diferentes
+  - Precisão vs número de qubits
+- **Vantagem sobre Métodos Clássicos**: Medição direta de fases inacessíveis classicamente
+
 ## 🧰 Módulos Python (src/)
 
 ### src/quantum_viz.py
@@ -390,12 +437,18 @@ Os notebooks incluem múltiplas formas de visualização:
   - Estados com fases diferentes (|i+⟩, |i−⟩)
   - Observabilidade e efeitos físicos
 - **Phase Kickback**: Transferência de fase entre qubits
+- **Bases quânticas**:
+  - Base computacional: estados |0⟩, |1⟩ (digital)
+  - Base de Fourier: codificação em fases (ondulatório)
+  - Mudança de base via QFT
 
 ### Portas Quânticas
 - **Portas de Pauli**: X (NOT), Y, Z
 - **Porta Hadamard (H)**: Criação de superposição
 - **Portas de fase**: S (π/2), T (π/4)
-- **Portas controladas**: CNOT, CZ
+- **Portas controladas**: CNOT, CZ, **CP (Controlled-Phase)**
+  - **Porta CP**: Adiciona fase condicional e^(iθ) ao estado |11⟩
+  - Casos especiais: CP(π)=CZ, CP(π/2)=CS, CP(π/4)=CT
 - **Interpretação física**: Beam splitters e interferômetros
 
 ### Protocolos e Algoritmos Quânticos
@@ -412,6 +465,16 @@ Os notebooks incluem múltiplas formas de visualização:
   - Oráculo de marcação (inversão de fase)
   - Difusor de Grover (inversão sobre a média)
   - Vantagem quântica quadrática (√N vs N/2)
+- **Transformada de Fourier Quântica (QFT)**:
+  - Tradução entre base computacional e base de Fourier
+  - Codificação de informação em fases (rotações)
+  - Transformação unitária reversível (QFT†)
+  - Complexidade O(n²) vs O(n2ⁿ) clássica
+- **Estimação de Fase Quântica (QPE)**:
+  - Medição de autovalores de operadores unitários
+  - Combinação de Phase Kickback e QFT Inversa
+  - Precisão escalável com qubits de contagem
+  - Componente central do Algoritmo de Shor
 
 ### Experimentos e Demonstrações
 - **Interferômetro de Mach-Zehnder**: Interpretação física da porta Hadamard

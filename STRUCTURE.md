@@ -5,7 +5,6 @@
 ```
 quantum/
 ├── notebooks/          # 📚 Notebooks Jupyter educacionais
-│   ├── 00-math.ipynb
 │   ├── 00a-math.ipynb
 │   ├── 00b-phases.ipynb
 │   ├── 01-intro.ipynb
@@ -17,7 +16,8 @@ quantum/
 │   ├── 05-kickback.qasm
 │   ├── 05-deutsch-jozsa.qasm
 │   ├── 06-grover.ipynb
-│   └── 06-grover.qasm
+│   ├── 06-grover.qasm
+│   └── 07-quantum-fourier-transform.ipynb
 │
 ├── src/                # 🧰 Módulos Python reutilizáveis
 │   ├── __init__.py
@@ -109,7 +109,6 @@ fig = plot_qsphere_interactive(state)
    - `src/` - Módulos Python reutilizáveis
 
 2. **Arquivos movidos/criados**:
-   - `00-math.ipynb` → `notebooks/00-math.ipynb`
    - `00a-math.ipynb` → `notebooks/00a-math.ipynb` (reorganização)
    - `00b-phases.ipynb` → `notebooks/00b-phases.ipynb` (novo - fases quânticas)
    - `01-intro.ipynb` → `notebooks/01-intro.ipynb`
@@ -122,6 +121,7 @@ fig = plot_qsphere_interactive(state)
    - `05-deutsch-jozsa.qasm` → `notebooks/05-deutsch-jozsa.qasm`
    - `06-grover.ipynb` → `notebooks/06-grover.ipynb` (novo - Algoritmo de Grover)
    - `06-grover.qasm` → `notebooks/06-grover.qasm` (novo - implementação OpenQASM)
+   - `07-quantum-fourier-transform.ipynb` → `notebooks/07-quantum-fourier-transform.ipynb` (novo - QFT e QPE)
    - `quantum_viz.py` → `src/quantum_viz.py`
 
 3. **Atualizações**:
@@ -129,6 +129,12 @@ fig = plot_qsphere_interactive(state)
    - `README.md` com nova estrutura documentada
    - `src/__init__.py` criado para tornar src/ um pacote Python
    - `src/README.md` criado com documentação do módulo
+   - `00b-phases.ipynb` expandido com:
+     * Porta CP (Controlled-Phase) com implementações NumPy e Qiskit
+     * Visualizações detalhadas com Bloch Spheres para sistemas multi-qubit
+     * Explicação pedagógica sobre convenção little-endian e np.kron
+     * Comparação numérica entre NumPy e Qiskit
+     * Experimentos interativos com estados customizados
 
 ## 🎯 Próximos Passos
 
