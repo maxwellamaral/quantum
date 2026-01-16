@@ -83,7 +83,10 @@ quantum/
 │   ├── 05-deutsch-jozsa.qasm
 │   ├── 06-grover.ipynb
 │   ├── 06-grover.qasm
-│   └── 07-quantum-fourier-transform.ipynb
+│   ├── 07-quantum-fourier-transform.ipynb
+│   ├── 20-quantum-machine-learning.ipynb
+│   ├── 20-vqc-classifier.qasm
+│   └── 20-vqc-tutorial.qasm
 ├── src/                # Módulos Python reutilizáveis
 │   ├── __init__.py
 │   └── quantum_viz.py  # Funções de visualização interativa
@@ -110,32 +113,104 @@ quantum/
 | **05-interference** | Phase kickback, Deutsch-Jozsa | 🔴 Avançado |
 | **06-grover** | Busca quântica, amplificação de amplitude | 🔴 Avançado |
 | **07-QFT** | Transformada de Fourier, estimação de fase | 🔴 Avançado |
+| **20-QML** | Machine Learning quântico, VQC, classificação | 🔴 Avançado |
 
 </div>
 
 ### 📘 notebooks/00a-math.ipynb
 **Fundamentos Matemáticos da Computação Quântica** 🟢
 
-- 🔹 **Estados quânticos básicos**: |0⟩, |1⟩ e notação de Dirac
-- 🔹 **Representação vetorial**: Vetores coluna e amplitudes
-- 🔹 **Superposição**: Estados |+⟩ e |−⟩
-- 🔹 **Portas quânticas fundamentais**: X, H, Z
-- 🔹 **Produto tensorial**: Estados de múltiplos qubits
-- 🔹 **Porta CNOT**: Emaranhamento e estados de Bell
-- 🔹 **Medição e probabilidades**: Born Rule
-- 🔹 **Implementações práticas**: NumPy e SymPy
+- **Estados Quânticos Básicos**:
+  - Notação de Dirac: |0⟩ (ket zero) e |1⟩ (ket um)
+  - Representação vetorial como vetores coluna
+  - Amplitudes α e β: interpretação e normalização (|α|² + |β|² = 1)
+  - Estado genérico: |ψ⟩ = α|0⟩ + β|1⟩
+  - Implementações com SymPy (simbólico) e NumPy (numérico)
+  
+- **Portas Quânticas Fundamentais**:
+  - **Porta X (NOT Quântico)**: Inversão de estados |0⟩ ↔ |1⟩
+    * Matriz 2×2 e multiplicação matricial passo a passo
+    * Demonstrações com SymPy e NumPy
+  - **Porta H (Hadamard)**: Criação de superposição (porta mais importante!)
+    * Transforma |0⟩ → |+⟩ e |1⟩ → |−⟩
+    * Matriz com fator 1/√2
+  - **Portas de Fase (Z, S, T)**: Modificação de fase sem alterar probabilidades
+    * Aplicação prática e representação matricial
+  - Analogia: Portas como rotações na Esfera de Bloch
+  
+- **Superposição Quântica**:
+  - Conceito fundamental: qubit em múltiplos estados simultaneamente
+  - Analogia da "moeda quântica" 🪙 girando no ar
+  - Estados |+⟩ e |−⟩ criados pela porta Hadamard
+  - Diferença entre superposição quântica e probabilidade clássica
+  - Colapso da superposição durante a medição (destruição da informação quântica)
+  - Conceito de "shots" (1024 medições) para obter distribuições de probabilidade
+  - Natureza probabilística vs. determinística (quântico vs. clássico)
+  - Referência ao experimento físico com fótons (03-mais-sobre-Hadamard.md)
+  
+- **Produto Tensorial (Estados Multi-Qubit)**:
+  - Operador ⊗ (Kronecker product) para combinar qubits
+  - Construção de estados |00⟩, |01⟩, |10⟩, |11⟩
+  - Representação de 2 qubits: vetor de 4 dimensões
+  - Superposição de múltiplos qubits: |ψ⟩ = α|00⟩ + β|01⟩ + γ|10⟩ + δ|11⟩
+  - Demonstrações passo a passo com SymPy
+  
+- **Portas de Dois Qubits**:
+  - **CNOT (Controlled-NOT)**: Emaranhamento e estados de Bell
+    * Matriz 4×4 e funcionamento condicional
+    * Exemplos: CNOT|11⟩ = |10⟩, CNOT|10⟩ = |11⟩
+  - **CZ (Controlled-Z)**: Inversão de fase condicional
+    * Matriz 4×4 e operação de fase
+    * Exemplo: CZ|11⟩ = -|11⟩
+  - **ZZ Gate**: Fase condicional baseada em ambos os qubits
+    * Inverte fase de |01⟩ e |10⟩, mantém |00⟩ e |11⟩
+    * Aplicações em Feature Maps (ZZFeatureMap)
+  - Implementações com NumPy para cada porta
+  
+- **Medição Quântica e Probabilidades**:
+  - Born Rule: P(0) = |α|², P(1) = |β|²
+  - Simulação de medição com np.random.choice
+  - Função `medir_qubit()` demonstrando o colapso probabilístico
+  - Interpretação física do processo de medição
+  
+- **Escalabilidade e Limitações Computacionais**:
+  - Crescimento exponencial: n qubits → matriz 2ⁿ×2ⁿ
+  - Exemplo: 50 qubits = matriz ~10¹⁵×10¹⁵ (inviável com NumPy)
+  - Justificativa para frameworks especializados (Qiskit, PennyLane)
+  - Truques matemáticos e otimizações necessárias
+  
+- **Visualizações e Ferramentas**:
+  - Fórmulas LaTeX formatadas com display(Markdown())
+  - Esfera de Bloch (introdução)
+  - Q-Sphere para estados multi-qubit
+  - Comparação entre abordagens simbólicas (SymPy) e numéricas (NumPy)
 
 ### 📙 notebooks/00b-phases.ipynb
-**Fases Quânticas - Conceitos Gerais** 🟡
+**Fases Quânticas e Portas de Rotação Parametrizadas** 🟡
 - **Fase quântica**: Fundamento da interferência quântica
 - **Fase global vs. fase relativa**: Diferenças e observabilidade
 - **Estados com fases diferentes**: |+⟩, |−⟩, |i+⟩, |i−⟩
-- **Portas de fase**:
+- **Portas de fase fixas**:
   - **Porta Z**: Adiciona 180° de fase ao |1⟩
   - **Porta S**: Adiciona 90° de fase ao |1⟩
   - **Porta T**: Adiciona 45° de fase ao |1⟩
 - **Visualizações na Esfera de Bloch**: Estados com diferentes fases
-- **Estados de Bell com fases**: Impacto da fase no emaranhamento
+- **Visualizações com Q-Sphere**: Representação de fases por cores
+- **Experimento interativo**: Criação de estados customizados com diferentes fases
+- **Portas de Rotação Parametrizadas (RX, RY, RZ)**:
+  - **Introdução**: Portas com ângulos variáveis para QML e circuitos variacionais
+  - **Aplicações em VQC**: Codificação de dados e ansatz variacional
+  - **Matrizes das portas**: RX(θ), RY(θ), RZ(θ) com SymPy
+  - **Implementação manual com NumPy**: Funções `rx_gate()`, `ry_gate()`, `rz_gate()`
+  - **Exemplos práticos visualizados**:
+    * RY: Rotação no plano XZ (uso em Ansatz e codificação de dados)
+    * RZ: Rotação de fase pura (uso em Feature Maps)
+    * RX: Rotação no plano YZ (criação de estados complexos)
+  - **Codificação de dados clássicos**: Mapeamento [0,1] → estados quânticos via RY
+  - **Visualizações na Esfera de Bloch**: Estados com 5 ângulos diferentes por porta
+  - **Visualizações com Q-Sphere**: Representação de fases nos dados codificados
+  - **Relação com portas fixas**: Z=RZ(π), S=RZ(π/2), T=RZ(π/4), X=RX(π)
+  - **Importância para QML**: Parametrização, expressividade, gradientes e kernels quânticos
 - **Porta CP (Controlled-Phase)**:
   - **Definição e matriz**: Porta quântica de dois qubits que adiciona fase condicional
   - **Implementação com NumPy**: Função `cphase_gate(theta)` para cálculos diretos
@@ -145,8 +220,7 @@ quantum/
   - **Implementação com Qiskit**: Uso de `qc.cp(theta, control, target)` em circuitos
   - **Comparação NumPy vs Qiskit**: Validação numérica entre implementações
   - **Casos especiais**: CP(π) = CZ, CP(π/2) = CS, CP(π/4) = CT
-- **Experimento interativo**: Criação de estados customizados com diferentes fases
-- **Aplicações práticas**: Base para QFT, QPE e algoritmos quânticos avançados
+- **Aplicações práticas**: Base para QFT, QPE, Grover, VQC e algoritmos quânticos avançados
 
 ### 📗 notebooks/01-intro.ipynb
 **Introdução ao Qiskit** 🟢
@@ -380,6 +454,147 @@ quantum/
   - Precisão vs número de qubits
 - **Vantagem sobre Métodos Clássicos**: Medição direta de fases inacessíveis classicamente
 
+### 🤖 notebooks/20-quantum-machine-learning.ipynb
+**Quantum Machine Learning (QML) - Classificação com VQC** 🔴
+- **Estrutura do "Sanduíche Quântico"**: 
+  - Feature Map (Codificação): Transformação de dados clássicos em estados quânticos
+  - Ansatz (Modelo Treinável): Circuito parametrizado com pesos ajustáveis
+  - Medição (Saída): Extração de probabilidades de classificação
+- **Implementação Completa de VQC (Variational Quantum Classifier)**:
+  - Preparação de dados com normalização (MinMaxScaler)
+  - Divisão treino/teste e visualizações de datasets
+  - ZZFeatureMap: Projeção em alta dimensão (2ⁿ espaço de Hilbert)
+  - RealAmplitudes Ansatz: Circuito variacional com rotações RY e emaranhamento CNOT
+  - Otimização com COBYLA (Constrained Optimization BY Linear Approximations)
+- **Análise Detalhada do Feature Map**:
+  - ZZFeatureMap: Interações não-lineares via produto xᵢ·xⱼ
+  - Camadas H → RZ → ZZ com repetições configuráveis
+  - Emaranhamento nativo e termos não-lineares sem custo extra
+  - Comparação com kernels clássicos (linear, polinomial)
+- **Análise Detalhada do Ansatz**:
+  - RealAmplitudes: Rotações RY + CNOT em camadas
+  - Parâmetros treináveis otimizados por gradiente
+  - Expressividade vs profundidade (reps)
+  - Alternativas: EfficientSU2, TwoLocal, Custom Ansatz
+- **Experimentos Práticos**:
+  - Classificação binária com dados linearmente separáveis
+  - Classificação com dados circulares não-lineares (make_circles)
+  - Visualização de fronteiras de decisão
+  - Comparação VQC vs SVM clássico
+- **Visualizações Avançadas**:
+  - Circuitos quânticos (Feature Map + Ansatz)
+  - Esferas de Bloch para estados quânticos codificados
+  - Fronteiras de decisão (decision boundaries) 2D
+  - Curvas de aprendizado e evolução de parâmetros
+- **Conceitos de Otimização**:
+  - COBYLA: Otimização sem gradiente (derivative-free)
+  - Landscape de parâmetros e mínimos locais
+  - Barren Plateaus e vanishing gradients
+  - Estratégias de inicialização de parâmetros
+- **Quando QML tem vantagens**:
+  - Dados não-lineares complexos
+  - Problemas de alta dimensionalidade
+  - Correlações entre features (xᵢ·xⱼ)
+  - Espaço de Hilbert exponencial (kernel quântico)
+- **Limitações e Considerações**:
+  - Normalização crítica de features [0, π]
+  - Ruído em hardware NISQ (Noisy Intermediate-Scale Quantum)
+  - Custo computacional de simulação clássica
+  - Número limitado de qubits disponíveis
+- **Biblioteca Qiskit Machine Learning**:
+  - Sintaxe similar ao scikit-learn (.fit(), .predict())
+  - Compatibilidade com pipelines clássicos
+  - Suporte a múltiplos backends (simuladores e hardware real)
+
+#### 🔧 notebooks/20-vqc-classifier.qasm
+> **🎓 Implementação OpenQASM de VQC Completo**
+>
+> Arquivo QASM demonstrando a estrutura completa de um Classificador Variacional Quântico:
+
+- **Formato**: OpenQASM 2.0 (padrão da indústria)
+- **Uso no IBM Quantum Platform**:
+  - ✅ Importação direta no [IBM Quantum Composer](https://quantum.ibm.com/composer)
+  - ✅ Execução em simuladores quânticos
+  - ✅ Visualização gráfica da arquitetura VQC
+  - ✅ Base para experimentos de QML
+  - ✅ Demonstração educacional de Feature Map + Ansatz
+
+- **Circuito implementado**: 2 qubits processando 2 features
+- **Estrutura completa**:
+  - PARTE 1: Feature Map (ZZ-style)
+    * Superposição inicial (H gates)
+    * Codificação de dados (RZ rotations)
+    * Emaranhamento ZZ (CNOT + RZ + CNOT)
+    * Rotações RX adicionais
+  - PARTE 2: Ansatz (RealAmplitudes-style)
+    * Camada 1: RY rotations com parâmetros θ0, θ1
+    * Emaranhamento: CNOT gates
+    * Camada 2: RY rotations com parâmetros θ2, θ3
+  - PARTE 3: Medição em base computacional
+
+- **Parâmetros exemplo**:
+  - Features: x0 = 1.2, x1 = 2.3 (normalizadas)
+  - Weights: θ0 = 0.5, θ1 = 1.0, θ2 = 1.5, θ3 = 0.3 (fixos para demonstração)
+- **Comentários detalhados**: Cada seção explicada linha a linha
+- **Educacional**: Ideal para entender a arquitetura VQC visualmente
+
+**Como usar**:
+1. Acesse [quantum.ibm.com/composer](https://quantum.ibm.com/composer)
+2. Importe o arquivo `20-vqc-classifier.qasm`
+3. Visualize a estrutura do circuito
+4. Modifique parâmetros de features e weights
+5. Execute e observe como diferentes valores afetam a classificação!
+
+**Nota para experimentação**:
+- Altere os valores de RZ para simular diferentes dados de entrada
+- Modifique os parâmetros RY do Ansatz para ver o efeito do treinamento
+- Em um VQC real, os parâmetros θ seriam otimizados automaticamente
+
+#### 🔧 notebooks/20-vqc-tutorial.qasm
+> **📚 Tutorial: Componentes VQC Separados**
+>
+> Arquivo QASM educacional demonstrando cada componente do VQC isoladamente:
+
+- **Formato**: OpenQASM 2.0 (padrão da indústria)
+- **Estrutura modular**: 3 exemplos independentes (comente/descomente para testar)
+
+- **EXEMPLO 1: Apenas Feature Map**
+  - Demonstra apenas a codificação de dados
+  - ZZ Feature Map com x0 = π/4, x1 = π/2
+  - Superposição → Codificação → Emaranhamento
+  - Útil para entender como dados viram estados quânticos
+
+- **EXEMPLO 2: Apenas Ansatz**
+  - Demonstra apenas o modelo treinável
+  - RealAmplitudes-style com 2 camadas
+  - Parâmetros fixos: θ0=1.0, θ1=0.5, θ2=1.5, θ3=0.3
+  - Útil para entender a estrutura do modelo
+
+- **EXEMPLO 3: VQC Completo com Fronteira de Decisão**
+  - Combinação completa: Feature Map + Ansatz
+  - Testa 4 pontos de dados diferentes
+  - Demonstra como o VQC classifica diferentes entradas
+  - Compara resultados com e sem treinamento
+
+- **Uso educacional**:
+  - Teste cada componente separadamente
+  - Compare resultados de diferentes configurações
+  - Experimente modificar parâmetros
+  - Visualize o impacto de cada camada
+
+**Como usar**:
+1. Acesse [quantum.ibm.com/composer](https://quantum.ibm.com/composer)
+2. Importe o arquivo `20-vqc-tutorial.qasm`
+3. **Descomente apenas UMA seção por vez**
+4. Execute e visualize o circuito específico
+5. Compare resultados entre diferentes configurações!
+
+**Dica pedagógica**:
+- Comece com EXEMPLO 1 (só Feature Map) para entender codificação
+- Depois teste EXEMPLO 2 (só Ansatz) para entender o modelo
+- Finalmente rode EXEMPLO 3 (completo) para ver tudo junto
+- Modifique valores e observe como a classificação muda!
+
 ---
 
 ## 🧰 Módulos Python (src/)
@@ -550,6 +765,14 @@ Os notebooks incluem **múltiplas formas de visualização** para facilitar o en
   - Combinação de Phase Kickback e QFT Inversa
   - Precisão escalável com qubits de contagem
   - Componente central do Algoritmo de Shor
+- **Quantum Machine Learning (QML)**:
+  - Classificador Variacional Quântico (VQC)
+  - Feature Map: ZZFeatureMap, projeção em espaço de Hilbert
+  - Ansatz: RealAmplitudes, circuito parametrizado treinável
+  - Otimizador COBYLA (sem gradientes)
+  - Kernel trick quântico e vantagens sobre ML clássico
+  - Era NISQ: limitações de hardware e ruído
+  - Comparação com SVM e Regressão Logística
 
 ### Experimentos e Demonstrações
 - **Interferômetro de Mach-Zehnder**: Interpretação física da porta Hadamard
