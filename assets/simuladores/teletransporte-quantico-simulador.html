@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teletransporte Quântico · Simulador Interativo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #06080f;
+            --bg-2: #0a0e1a;
+            --bg-card: #0d1320;
+            --bg-card-2: #131a2a;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-strong: rgba(255, 255, 255, 0.15);
+            --text: #f0f4ff;
+            --text-2: #94a3b8;
+            --text-3: #64748b;
+            --accent: #2dd4bf;
+            --alice: #fb7185;
+            --bob: #34d399;
+            --psi: #fbbf24;
+            --measure: #f43f5e;
+            --success: #22c55e;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Manrope', system-ui, sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse 80% 50% at 10% 0%, rgba(45, 212, 191, 0.12), transparent 60%),
+                radial-gradient(ellipse 70% 60% at 90% 30%, rgba(251, 113, 133, 0.08), transparent 60%),
+                radial-gradient(ellipse 60% 50% at 50% 100%, rgba(251, 191, 36, 0.06), transparent 60%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        main {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .font-display {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .card {
+            background: linear-gradient(180deg, rgba(13, 19, 32, 0.85), rgba(10, 14, 26, 0.85));
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            border: 1px solid var(--border-strong);
+            background: var(--bg-card-2);
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #14b8a6);
+            border-color: transparent;
+            color: #052e2b;
+            box-shadow: 0 8px 24px -8px rgba(45, 212, 191, 0.5);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 12px 32px -8px rgba(45, 212, 191, 0.7);
+            background: linear-gradient(135deg, #5eead4, #2dd4bf);
+        }
+
+        .bloch-canvas {
+            width: 100%;
+            aspect-ratio: 1;
+            display: block;
+            cursor: grab;
+        }
+
+        .bloch-canvas:active {
+            cursor: grabbing;
+        }
+
+        .bloch-canvas.no-interact {
+            cursor: default;
+        }
+
+        .step-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(45, 212, 191, 0.1);
+            border: 1px solid rgba(45, 212, 191, 0.3);
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .alice-panel {
+            border-color: rgba(251, 113, 133, 0.25) !important;
+            background: linear-gradient(180deg, rgba(251, 113, 133, 0.04), rgba(13, 19, 32, 0.85)) !important;
+        }
+
+        .bob-panel {
+            border-color: rgba(52, 211, 153, 0.25) !important;
+            background: linear-gradient(180deg, rgba(52, 211, 153, 0.04), rgba(13, 19, 32, 0.85)) !important;
+        }
+
+        .psi-panel {
+            border-color: rgba(251, 191, 36, 0.25) !important;
+            background: linear-gradient(180deg, rgba(251, 191, 36, 0.04), rgba(13, 19, 32, 0.85)) !important;
+        }
+
+        .preset-btn {
+            padding: 7px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-2);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--psi);
+            color: var(--psi);
+            background: rgba(251, 191, 36, 0.05);
+        }
+
+        .preset-btn.active {
+            border-color: var(--psi);
+            color: var(--psi);
+            background: rgba(251, 191, 36, 0.1);
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+        }
+
+        .bit {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-3);
+            transition: all 0.3s ease;
+        }
+
+        .bit.set {
+            background: rgba(244, 63, 94, 0.15);
+            border-color: var(--measure);
+            color: var(--measure);
+            box-shadow: 0 0 16px rgba(244, 63, 94, 0.4);
+        }
+
+        /* Circuit styles */
+        .circuit-svg .gate-rect {
+            fill: rgba(20, 26, 40, 0.9);
+            stroke: rgba(255, 255, 255, 0.2);
+            stroke-width: 1.5;
+            transition: all 0.4s ease;
+        }
+
+        .circuit-svg .gate-rect.active {
+            fill: var(--accent);
+            stroke: var(--accent);
+            filter: drop-shadow(0 0 10px var(--accent));
+        }
+
+        .circuit-svg .gate-rect.done {
+            fill: rgba(45, 212, 191, 0.18);
+            stroke: rgba(45, 212, 191, 0.5);
+        }
+
+        .circuit-svg .gate-rect.pending {
+            opacity: 0.45;
+        }
+
+        .circuit-svg text.label {
+            fill: rgba(255, 255, 255, 0.6);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            text-anchor: middle;
+            dominant-baseline: middle;
+            pointer-events: none;
+            transition: all 0.4s ease;
+        }
+
+        .circuit-svg text.label.active {
+            fill: #052e2b;
+        }
+
+        .circuit-svg text.label.done {
+            fill: var(--accent);
+        }
+
+        .circuit-svg text.label.pending {
+            fill: rgba(255, 255, 255, 0.4);
+        }
+
+        .circuit-svg .gate-dot {
+            fill: rgba(255, 255, 255, 0.5);
+            transition: all 0.4s ease;
+        }
+
+        .circuit-svg .gate-dot.active {
+            fill: var(--accent);
+            filter: drop-shadow(0 0 8px var(--accent));
+        }
+
+        .circuit-svg .gate-dot.done {
+            fill: rgba(45, 212, 191, 0.7);
+        }
+
+        .circuit-svg .gate-dot.pending {
+            fill: rgba(255, 255, 255, 0.3);
+        }
+
+        .circuit-svg .gate-conn {
+            stroke: rgba(255, 255, 255, 0.25);
+            stroke-width: 1.5;
+            transition: all 0.4s ease;
+        }
+
+        .circuit-svg .gate-conn.active {
+            stroke: var(--accent);
+            filter: drop-shadow(0 0 5px var(--accent));
+        }
+
+        .circuit-svg .gate-conn.done {
+            stroke: rgba(45, 212, 191, 0.5);
+        }
+
+        .circuit-svg .gate-conn.pending {
+            stroke: rgba(255, 255, 255, 0.15);
+        }
+
+        .circuit-svg .gate-target {
+            fill: rgba(20, 26, 40, 0.9);
+            stroke: rgba(255, 255, 255, 0.3);
+            stroke-width: 1.5;
+            transition: all 0.4s ease;
+        }
+
+        .circuit-svg .gate-target.active {
+            fill: var(--accent);
+            stroke: var(--accent);
+            filter: drop-shadow(0 0 8px var(--accent));
+        }
+
+        .circuit-svg .gate-target.done {
+            stroke: rgba(45, 212, 191, 0.5);
+        }
+
+        .circuit-svg .gate-target.pending {
+            opacity: 0.45;
+        }
+
+        .circuit-svg .gate-target-cross {
+            stroke: rgba(255, 255, 255, 0.4);
+            stroke-width: 1.5;
+            transition: all 0.4s ease;
+        }
+
+        .circuit-svg .gate-target-cross.active {
+            stroke: #052e2b;
+        }
+
+        .circuit-svg .gate-target-cross.done {
+            stroke: rgba(45, 212, 191, 0.7);
+        }
+
+        .circuit-svg .gate-measure {
+            fill: rgba(244, 63, 94, 0.05);
+            stroke: rgba(244, 63, 94, 0.3);
+            stroke-width: 1.5;
+            transition: all 0.4s ease;
+        }
+
+        .circuit-svg .gate-measure.active {
+            fill: rgba(244, 63, 94, 0.2);
+            stroke: var(--measure);
+            filter: drop-shadow(0 0 10px var(--measure));
+        }
+
+        .circuit-svg .gate-measure.done {
+            fill: rgba(244, 63, 94, 0.08);
+            stroke: rgba(244, 63, 94, 0.5);
+        }
+
+        .circuit-svg .gate-measure.pending {
+            opacity: 0.45;
+        }
+
+        .circuit-svg .measure-arc {
+            stroke: rgba(244, 63, 94, 0.5);
+            stroke-width: 1.5;
+            fill: none;
+            transition: all 0.4s ease;
+        }
+
+        .circuit-svg .measure-arc.active {
+            stroke: var(--measure);
+        }
+
+        .circuit-svg .measure-arc.done {
+            stroke: rgba(244, 63, 94, 0.6);
+        }
+
+        .circuit-svg .measure-arc.pending {
+            opacity: 0.45;
+        }
+
+        .circuit-svg .classical-wire {
+            stroke: rgba(244, 63, 94, 0.2);
+            stroke-width: 1.5;
+            stroke-dasharray: 4 4;
+            transition: all 0.4s ease;
+        }
+
+        .circuit-svg .classical-wire.active {
+            stroke: var(--measure);
+            animation: dash-flow 0.5s linear infinite;
+        }
+
+        .circuit-svg .classical-wire.done {
+            stroke: rgba(244, 63, 94, 0.4);
+        }
+
+        @keyframes dash-flow {
+            to {
+                stroke-dashoffset: -16;
+            }
+        }
+
+        .circuit-svg .wire {
+            stroke: rgba(255, 255, 255, 0.2);
+            stroke-width: 1.5;
+            fill: none;
+        }
+
+        .circuit-svg text.qubit-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            dominant-baseline: middle;
+        }
+
+        .circuit-svg text.annotation {
+            font-family: 'Manrope', sans-serif;
+            font-size: 11px;
+            fill: rgba(255, 255, 255, 0.4);
+            text-anchor: middle;
+        }
+
+        .circuit-svg .step-divider {
+            stroke: rgba(255, 255, 255, 0.06);
+            stroke-width: 1;
+            stroke-dasharray: 2 4;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-2);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-card-2);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        @keyframes pulse-soft {
+
+            0%,
+            100% {
+                opacity: 0.7;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .pulse-soft {
+            animation: pulse-soft 2s ease-in-out infinite;
+        }
+
+        @keyframes float-up {
+            0% {
+                transform: translateY(0);
+                opacity: 0;
+            }
+
+            20% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 20px;
+            background: rgba(13, 19, 32, 0.95);
+            border: 1px solid var(--success);
+            border-radius: 10px;
+            color: var(--success);
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(34, 197, 94, 0.3);
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-10px);
+        }
+
+        .progress-dot {
+            flex: 1;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.08);
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .progress-dot:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .progress-dot.done {
+            background: var(--accent);
+        }
+
+        .progress-dot.current {
+            background: linear-gradient(90deg, var(--accent), var(--psi));
+            box-shadow: 0 0 12px var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-gradient"></div>
+    <canvas class="bg-particles" id="bgCanvas"></canvas>
+
+    <main>
+        <!-- HEADER -->
+        <header class="pt-12 pb-10 text-center">
+            <div
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/[0.03] mb-6">
+                <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+                <span class="text-xs font-mono text-slate-400">SIMULAÇÃO INTERATIVA</span>
+            </div>
+            <h1 class="font-display text-5xl md:text-7xl font-bold tracking-tight mb-4 leading-none">
+                Teletransporte
+                <span
+                    class="block bg-gradient-to-r from-amber-300 via-teal-300 to-emerald-300 bg-clip-text text-transparent">
+                    Quântico
+                </span>
+            </h1>
+            <p class="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+                Como transferir o estado de um qubit de Alice para Bob — sem mover matéria pelo caminho.
+            </p>
+        </header>
+
+        <!-- INTRODUÇÃO -->
+        <section class="grid md:grid-cols-3 gap-4 mb-10">
+            <div class="card alice-panel p-5">
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-2.5 h-2.5 rounded-full" style="background: var(--alice)"></div>
+                    <span class="font-mono text-xs text-rose-300 tracking-wider">ALICE</span>
+                </div>
+                <h3 class="font-display text-lg font-semibold mb-1">A remetente</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">Possui o qubit |ψ⟩ que deseja enviar. Ao final, seu
+                    qubit original é destruído pela medição.</p>
+            </div>
+
+            <div class="card p-5"
+                style="border-color: rgba(45, 212, 191, 0.25); background: linear-gradient(180deg, rgba(45, 212, 191, 0.05), rgba(13, 19, 32, 0.85));">
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-2.5 h-2.5 rounded-full" style="background: var(--accent)"></div>
+                    <span class="font-mono text-xs text-teal-300 tracking-wider">EMARANHAMENTO</span>
+                </div>
+                <h3 class="font-display text-lg font-semibold mb-1">O canal quântico</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">Um par de qubits entrelaçados. O que acontece com um
+                    afeta o outro, instantaneamente.</p>
+            </div>
+
+            <div class="card bob-panel p-5">
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-2.5 h-2.5 rounded-full" style="background: var(--bob)"></div>
+                    <span class="font-mono text-xs text-emerald-300 tracking-wider">BOB</span>
+                </div>
+                <h3 class="font-display text-lg font-semibold mb-1">O destinatário</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">Recebe 2 bits clássicos e aplica uma correção. Seu
+                    qubit se transforma em |ψ⟩.</p>
+            </div>
+        </section>
+
+        <!-- SIMULADOR PRINCIPAL -->
+        <section class="card p-6 md:p-8 mb-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Coluna esquerda: configuração do |ψ⟩ -->
+                <div class="lg:col-span-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h2 class="font-display text-xl font-bold">Estado inicial</h2>
+                        <span class="font-mono text-sm" style="color: var(--psi)">|ψ⟩</span>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-4 leading-relaxed">
+                        Arraste na esfera para escolher o estado quântico que Alice vai enviar. A esfera de Bloch
+                        representa todos os estados puros possíveis de um qubit.
+                    </p>
+
+                    <div class="aspect-square w-full max-w-[280px] mx-auto mb-4">
+                        <canvas id="psiSphereInput" class="bloch-canvas"></canvas>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div>
+                            <div class="stat-label mb-1">θ (theta)</div>
+                            <div class="stat-value" id="thetaVal">π/3</div>
+                        </div>
+                        <div>
+                            <div class="stat-label mb-1">φ (phi)</div>
+                            <div class="stat-value" id="phiVal">π/4</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="stat-label mb-2">Presets</div>
+                        <div class="flex flex-wrap gap-2">
+                            <button class="preset-btn" data-preset="0">|0⟩</button>
+                            <button class="preset-btn" data-preset="1">|1⟩</button>
+                            <button class="preset-btn" data-preset="2">|+⟩</button>
+                            <button class="preset-btn" data-preset="3">|-⟩</button>
+                            <button class="preset-btn" data-preset="4">|+i⟩</button>
+                            <button class="preset-btn" data-preset="5">|−i⟩</button>
+                            <button class="preset-btn" data-preset="6">aleatório</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna direita: passo a passo -->
+                <div class="lg:col-span-8">
+                    <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                        <h2 class="font-display text-xl font-bold">O protocolo, passo a passo</h2>
+                        <span class="step-pill" id="stepPill">Passo 1 de 9</span>
+                    </div>
+
+                    <div class="flex gap-1.5 mb-6" id="progressBar"></div>
+
+                    <div class="card p-5 mb-5" style="background: rgba(255,255,255,0.02);">
+                        <h3 class="font-display text-2xl font-bold mb-3" id="stepTitle">Preparação</h3>
+                        <p class="text-slate-300 leading-relaxed mb-4" id="stepDesc">...</p>
+                        <div class="p-3 rounded-lg font-mono text-sm overflow-x-auto"
+                            style="background: rgba(45, 212, 191, 0.06); border-left: 3px solid var(--accent); color: var(--text);"
+                            id="stepFormula"></div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button class="btn" id="btnPrev">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M15 18l-6-6 6-6" />
+                            </svg>
+                            Anterior
+                        </button>
+                        <button class="btn btn-primary" id="btnPlay">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" id="playIcon">
+                                <polygon points="5 3 19 12 5 21" />
+                            </svg>
+                            <span id="playText">Iniciar</span>
+                        </button>
+                        <button class="btn" id="btnNext">
+                            Próximo
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M9 18l6-6-6-6" />
+                            </svg>
+                        </button>
+                        <div class="flex-1"></div>
+                        <button class="btn" id="btnReset">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+                                <path d="M3 3v5h5" />
+                            </svg>
+                            Reiniciar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISUALIZAÇÃO DO SISTEMA -->
+        <section class="card p-6 md:p-8 mb-8">
+            <div class="flex items-center justify-between mb-6 flex-wrap gap-2">
+                <h2 class="font-display text-xl font-bold">Sistema em tempo real</h2>
+                <span class="text-xs text-slate-500 font-mono">As 3 esferas de Bloch dos qubits envolvidos</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="card psi-panel p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="font-mono text-xs tracking-wider" style="color: var(--psi)">QUBIT DE
+                            INFORMAÇÃO</span>
+                        <span class="font-mono text-sm" style="color: var(--psi)">|ψ⟩</span>
+                    </div>
+                    <div class="aspect-square w-full">
+                        <canvas id="spherePsi" class="bloch-canvas no-interact"></canvas>
+                    </div>
+                    <div class="mt-3 text-center font-mono text-xs text-slate-400" id="statePsi">|ψ⟩ = ...</div>
+                </div>
+
+                <div class="card alice-panel p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="font-mono text-xs tracking-wider" style="color: var(--alice)">ALICE · QUBIT
+                            A</span>
+                        <span class="font-mono text-sm" style="color: var(--alice)">A</span>
+                    </div>
+                    <div class="aspect-square w-full">
+                        <canvas id="sphereA" class="bloch-canvas no-interact"></canvas>
+                    </div>
+                    <div class="mt-3 text-center font-mono text-xs text-slate-400" id="stateA">|0⟩</div>
+                </div>
+
+                <div class="card bob-panel p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="font-mono text-xs tracking-wider" style="color: var(--bob)">BOB · QUBIT B</span>
+                        <span class="font-mono text-sm" style="color: var(--bob)">B</span>
+                    </div>
+                    <div class="aspect-square w-full">
+                        <canvas id="sphereB" class="bloch-canvas no-interact"></canvas>
+                    </div>
+                    <div class="mt-3 text-center font-mono text-xs text-slate-400" id="stateB">|0⟩</div>
+                </div>
+            </div>
+
+            <!-- Info bar -->
+            <div class="mt-6 p-5 rounded-xl grid grid-cols-2 md:grid-cols-4 gap-4"
+                style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                <div>
+                    <div class="stat-label mb-2">Bits medidos por Alice</div>
+                    <div class="flex gap-2">
+                        <div class="bit" id="bit1">·</div>
+                        <div class="bit" id="bit2">·</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="stat-label mb-2">Mensagem clássica</div>
+                    <div class="font-mono text-lg font-bold" id="message" style="color: var(--text-3);">—</div>
+                </div>
+                <div>
+                    <div class="stat-label mb-2">Correção de Bob</div>
+                    <div class="font-mono text-lg font-bold" id="correction" style="color: var(--text-3);">—</div>
+                </div>
+                <div>
+                    <div class="stat-label mb-2">Status</div>
+                    <div class="font-mono text-sm font-semibold" id="status" style="color: var(--text-3);">Aguardando...
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CIRCUITO QUÂNTICO -->
+        <section class="card p-6 md:p-8 mb-8">
+            <div class="flex items-center justify-between mb-6 flex-wrap gap-2">
+                <h2 class="font-display text-xl font-bold">Circuito quântico</h2>
+                <span class="text-xs text-slate-500 font-mono">Notação padrão de portas lógicas quânticas</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <svg viewBox="0 0 920 240" class="circuit-svg w-full" style="min-width: 720px;" id="circuitSvg">
+                    <!-- Qubit labels -->
+                    <text x="20" y="55" class="qubit-label" fill="#fbbf24">|ψ⟩</text>
+                    <text x="20" y="120" class="qubit-label" fill="#fb7185">A</text>
+                    <text x="20" y="185" class="qubit-label" fill="#34d399">B</text>
+
+                    <!-- Wires -->
+                    <line x1="55" y1="50" x2="880" y2="50" class="wire" />
+                    <line x1="55" y1="115" x2="880" y2="115" class="wire" />
+                    <line x1="55" y1="180" x2="880" y2="180" class="wire" />
+
+                    <!-- Step 2: H on A + CNOT(A,B) - Bell pair -->
+                    <g>
+                        <rect x="100" y="99" width="32" height="32" rx="4" class="gate-rect" data-step="1" />
+                        <text x="116" y="116" class="label" data-step="1">H</text>
+
+                        <circle cx="190" cy="115" r="5" class="gate-dot" data-step="1" />
+                        <line x1="190" y1="115" x2="190" y2="180" class="gate-conn" data-step="1" />
+                        <circle cx="190" cy="180" r="11" class="gate-target" data-step="1" />
+                        <line x1="190" y1="169" x2="190" y2="191" class="gate-target-cross" data-step="1" />
+                        <line x1="179" y1="180" x2="201" y2="180" class="gate-target-cross" data-step="1" />
+                    </g>
+
+                    <!-- Divider -->
+                    <line x1="240" y1="20" x2="240" y2="220" class="step-divider" />
+                    <text x="170" y="15" class="annotation">par de Bell</text>
+
+                    <!-- Step 4: CNOT(ψ, A) -->
+                    <g>
+                        <circle cx="290" cy="50" r="5" class="gate-dot" data-step="3" />
+                        <line x1="290" y1="50" x2="290" y2="115" class="gate-conn" data-step="3" />
+                        <circle cx="290" cy="115" r="11" class="gate-target" data-step="3" />
+                        <line x1="290" y1="104" x2="290" y2="126" class="gate-target-cross" data-step="3" />
+                        <line x1="279" y1="115" x2="301" y2="115" class="gate-target-cross" data-step="3" />
+                    </g>
+
+                    <!-- Step 5: H on ψ -->
+                    <g>
+                        <rect x="340" y="34" width="32" height="32" rx="4" class="gate-rect" data-step="4" />
+                        <text x="356" y="51" class="label" data-step="4">H</text>
+                    </g>
+
+                    <!-- Divider -->
+                    <line x1="395" y1="20" x2="395" y2="220" class="step-divider" />
+                    <text x="340" y="15" class="annotation">Alice: emaranha</text>
+
+                    <!-- Step 6: Measurements -->
+                    <g>
+                        <rect x="440" y="34" width="42" height="32" rx="3" class="gate-measure" data-step="5" />
+                        <path d="M 446 60 A 15 15 0 0 1 476 60" class="measure-arc" data-step="5" />
+                        <line x1="461" y1="66" x2="461" y2="80" class="classical-wire" data-step="5" />
+
+                        <rect x="440" y="99" width="42" height="32" rx="3" class="gate-measure" data-step="5" />
+                        <path d="M 446 125 A 15 15 0 0 1 476 125" class="measure-arc" data-step="5" />
+                        <line x1="461" y1="131" x2="461" y2="145" class="classical-wire" data-step="5" />
+                    </g>
+
+                    <!-- Classical bits -->
+                    <line x1="461" y1="80" x2="461" y2="210" class="classical-wire" data-step="5" />
+                    <line x1="461" y1="210" x2="730" y2="210" class="classical-wire" data-step="6" />
+                    <line x1="461" y1="145" x2="490" y2="145" class="classical-wire" data-step="5" />
+                    <line x1="490" y1="145" x2="490" y2="225" class="classical-wire" data-step="5" />
+                    <line x1="490" y1="225" x2="730" y2="225" class="classical-wire" data-step="6" />
+
+                    <text x="595" y="205" class="annotation" fill="rgba(244,63,94,0.5)">canal clássico: 2 bits</text>
+
+                    <!-- Divider -->
+                    <line x1="740" y1="20" x2="740" y2="220" class="step-divider" />
+                    <text x="600" y="15" class="annotation">comunicação clássica</text>
+
+                    <!-- Step 8: Bob's corrections -->
+                    <g>
+                        <rect x="760" y="164" width="32" height="32" rx="4" class="gate-rect" data-step="7" />
+                        <text x="776" y="181" class="label" data-step="7">X</text>
+
+                        <rect x="815" y="164" width="32" height="32" rx="4" class="gate-rect" data-step="7" />
+                        <text x="831" y="181" class="label" data-step="7">Z</text>
+                    </g>
+
+                    <!-- Result -->
+                    <text x="868" y="185" class="qubit-label" fill="rgba(52,211,153,0.7)">|ψ⟩</text>
+                    <text x="830" y="15" class="annotation" fill="rgba(52,211,153,0.5)">= |ψ⟩ ✓</text>
+                </svg>
+            </div>
+
+            <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded" style="background: var(--accent);"></div>
+                    <span class="text-slate-400">Porta ativa</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded"
+                        style="background: rgba(45,212,191,0.2); border: 1px solid rgba(45,212,191,0.5);"></div>
+                    <span class="text-slate-400">Já executada</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded border border-white/30" style="background: rgba(20,26,40,0.5);"></div>
+                    <span class="text-slate-400">Aguardando</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-1 rounded" style="background: var(--measure);"></div>
+                    <span class="text-slate-400">Bit clássico</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- MATEMÁTICA -->
+        <section class="card p-6 md:p-8 mb-8">
+            <h2 class="font-display text-xl font-bold mb-6">A matemática, em 4 blocos</h2>
+
+            <div class="grid md:grid-cols-2 gap-5">
+                <div>
+                    <h3 class="font-mono text-xs text-teal-300 mb-2 tracking-wider">01 · ESTADO INICIAL</h3>
+                    <div class="font-mono text-sm leading-relaxed text-slate-300 p-4 rounded-lg"
+                        style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                        <div>|ψ⟩ = α|0⟩ + β|1⟩</div>
+                        <div class="mt-2 text-slate-500">com α = cos(θ/2), β = e^(iφ)·sin(θ/2)</div>
+                        <div class="mt-2">|A⟩ = |0⟩, |B⟩ = |0⟩</div>
+                        <div class="mt-2 text-slate-500">|α|² + |β|² = 1</div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-mono text-xs text-teal-300 mb-2 tracking-wider">02 · PAR DE BELL (EMARANHADO)</h3>
+                    <div class="font-mono text-sm leading-relaxed text-slate-300 p-4 rounded-lg"
+                        style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                        <div>|Φ⁺⟩ = (|00⟩ + |11⟩) / √2</div>
+                        <div class="mt-2 text-slate-500">Aplicando H em A e CNOT(A,B)</div>
+                        <div class="mt-2">Estado conjunto: |ψ⟩ ⊗ |Φ⁺⟩</div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-mono text-xs text-teal-300 mb-2 tracking-wider">03 · APÓS CNOT E H DE ALICE</h3>
+                    <div class="font-mono text-sm leading-relaxed text-slate-300 p-4 rounded-lg"
+                        style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                        <div>|Ψ⟩ = ½ ( |00⟩|ψ⟩ + |01⟩X|ψ⟩</div>
+                        <div class="ml-32">+ |10⟩Z|ψ⟩ + |11⟩XZ|ψ⟩ )</div>
+                        <div class="mt-2 text-slate-500">Cada resultado de medição (00, 01, 10, 11) correlaciona-se com
+                            uma versão específica de |ψ⟩ em B.</div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-mono text-xs text-teal-300 mb-2 tracking-wider">04 · MEDIÇÃO + CORREÇÃO</h3>
+                    <div class="font-mono text-sm leading-relaxed text-slate-300 p-4 rounded-lg"
+                        style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                        <div>00 → Bob tem |ψ⟩ → aplicar I</div>
+                        <div>01 → Bob tem X|ψ⟩ → aplicar X</div>
+                        <div>10 → Bob tem Z|ψ⟩ → aplicar Z</div>
+                        <div>11 → Bob tem XZ|ψ⟩ → aplicar ZX</div>
+                        <div class="mt-2 text-slate-500">Após a correção: B = |ψ⟩. ✓</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- IDÉIAS-CHAVE -->
+        <section class="card p-6 md:p-8 mb-12">
+            <h2 class="font-display text-xl font-bold mb-6">Idéias-chave para discutir em sala</h2>
+
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="p-4 rounded-lg"
+                    style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                    <h4 class="font-semibold mb-2 flex items-center gap-3">
+                        <span class="font-mono text-teal-300 font-bold">01</span>
+                        Não há clonagem
+                    </h4>
+                    <p class="text-sm text-slate-400 leading-relaxed">O estado original de Alice é destruído na medição.
+                        O teletransporte respeita o teorema da não-clonagem: não se cria uma cópia, transfere-se o
+                        estado.</p>
+                </div>
+
+                <div class="p-4 rounded-lg"
+                    style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                    <h4 class="font-semibold mb-2 flex items-center gap-3">
+                        <span class="font-mono text-teal-300 font-bold">02</span>
+                        Nada supera a velocidade da luz
+                    </h4>
+                    <p class="text-sm text-slate-400 leading-relaxed">Apesar do emaranhamento parecer "instantâneo", Bob
+                        só recupera |ψ⟩ após receber os 2 bits clássicos — que viajam por canais normais (luz, rádio,
+                        internet).</p>
+                </div>
+
+                <div class="p-4 rounded-lg"
+                    style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                    <h4 class="font-semibold mb-2 flex items-center gap-3">
+                        <span class="font-mono text-teal-300 font-bold">03</span>
+                        Por que importa?
+                    </h4>
+                    <p class="text-sm text-slate-400 leading-relaxed">É a base da criptografia quântica (QKD), da
+                        comunicação quântica segura e da futura "internet quântica" — permitindo transferir estados
+                        entre computadores quânticos distantes.</p>
+                </div>
+
+                <div class="p-4 rounded-lg"
+                    style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                    <h4 class="font-semibold mb-2 flex items-center gap-3">
+                        <span class="font-mono text-teal-300 font-bold">04</span>
+                        Não é o teletransporte da ficção
+                    </h4>
+                    <p class="text-sm text-slate-400 leading-relaxed">Teletransporta-se o <em>estado quântico</em>, não
+                        a matéria. Os átomos de Bob continuam os mesmos — apenas seu estado interno muda para refletir o
+                        de |ψ⟩.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center pb-12 text-sm text-slate-500">
+            <p>Simulador didático para ensino de computação quântica · Experimente diferentes estados iniciais e observe
+                como o protocolo sempre recupera |ψ⟩.</p>
+        </footer>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ============================================================
+        // CONFIGURAÇÃO E DADOS
+        // ============================================================
+        const PRESETS = [
+            { name: '|0⟩', theta: 0, phi: 0 },
+            { name: '|1⟩', theta: Math.PI, phi: 0 },
+            { name: '|+⟩', theta: Math.PI / 2, phi: 0 },
+            { name: '|-⟩', theta: Math.PI / 2, phi: Math.PI },
+            { name: '|+i⟩', theta: Math.PI / 2, phi: Math.PI / 2 },
+            { name: '|-i⟩', theta: Math.PI / 2, phi: -Math.PI / 2 },
+            { name: 'rand', theta: Math.PI / 3, phi: Math.PI / 4 } // será sobrescrito
+        ];
+
+        const STEPS = [
+            {
+                title: 'Preparação',
+                desc: 'Alice possui um qubit |ψ⟩ em algum estado arbitrário da esfera de Bloch. Bob tem o qubit B, e Alice tem outro qubit A — ambos começam no estado |0⟩. Para iniciar o teletransporte, primeiro precisamos criar emaranhamento entre A e B.',
+                formula: '|ψ⟩ = α|0⟩ + β|1⟩     |A⟩ = |0⟩     |B⟩ = |0⟩'
+            },
+            {
+                title: 'Criar o par emaranhado',
+                desc: 'Uma fonte cria um par de qubits emaranhados. Para isso, aplicamos uma porta Hadamard (H) no qubit A e em seguida uma porta CNOT com A como controle e B como alvo. O resultado é o estado de Bell |Φ⁺⟩, em que os dois qubits formam um sistema indivisível — medir um determina instantaneamente o resultado do outro.',
+                formula: '|Φ⁺⟩_AB = ( |00⟩ + |11⟩ ) / √2'
+            },
+            {
+                title: 'Distribuir os qubits',
+                desc: 'O qubit A fica com Alice e o qubit B vai para Bob. Eles podem estar a quilômetros de distância — o emaranhamento persiste. Individualmente, porém, nenhum dos dois tem estado definido: estão em estado "misto" (a nuvem no centro da esfera representa essa incerteza fundamental).',
+                formula: 'A → Alice    |    B → Bob    (emaranhamento persiste)'
+            },
+            {
+                title: 'CNOT(ψ, A)',
+                desc: 'Alice agora aplica uma porta CNOT usando seu qubit |ψ⟩ como controle e A como alvo. Isso emaranha |ψ⟩ com o par Bell, criando um único estado conjunto dos três qubits. A informação original de |ψ⟩ começa a ser "espalhada" pelo sistema.',
+                formula: 'CNOT( |ψ⟩, A )   —   controle: |ψ⟩,   alvo: A'
+            },
+            {
+                title: 'Hadamard em |ψ⟩',
+                desc: 'Alice aplica uma porta Hadamard no qubit |ψ⟩. Esta operação, combinada com o CNOT anterior, transforma o sistema em uma superposição em que cada um dos 4 possíveis resultados de medição (00, 01, 10, 11) fica correlacionado com uma versão específica de |ψ⟩ no qubit de Bob.',
+                formula: 'H|ψ⟩   —   prepara superposição das 4 correções possíveis'
+            },
+            {
+                title: 'Medição',
+                desc: 'Alice mede seus dois qubits na base computacional, obtendo dois bits clássicos: m₁ (de |ψ⟩) e m₂ (de A). Cada bit é 0 ou 1 com igual probabilidade. No instante da medição, o estado de Bob colapsa para uma das 4 variações de |ψ⟩: o próprio |ψ⟩, X|ψ⟩, Z|ψ⟩ ou XZ|ψ⟩.',
+                formula: 'm₁, m₂ ∈ {0, 1}   —   4 resultados igualmente prováveis'
+            },
+            {
+                title: 'Comunicação clássica',
+                desc: 'Alice envia os 2 bits clássicos (m₁, m₂) para Bob por um canal convencional — internet, rádio, fibra óptica. Esta etapa respeita o limite da velocidade da luz. Sem esses bits, Bob seria incapaz de recuperar |ψ⟩: do seu lado, tudo parece ruído aleatório.',
+                formula: 'Canal clássico:   (m₁, m₂)   →   Bob'
+            },
+            {
+                title: 'Correção de Bob',
+                desc: 'Com base nos bits recebidos, Bob aplica a correção adequada ao seu qubit: 00 → não faz nada (Identidade); 01 → aplica X (NOT quântico); 10 → aplica Z (mudança de fase); 11 → aplica ZX (ambas). Essas operações "desfazem" as transformações que o estado sofreu do lado de Alice.',
+                formula: '00 → I   |   01 → X   |   10 → Z   |   11 → ZX'
+            },
+            {
+                title: 'Resultado: |ψ⟩ entregue!',
+                desc: 'Após a correção, o qubit de Bob está exatamente no estado |ψ⟩ original de Alice! A informação quântica foi "teletransportada". Importante: o qubit original de Alice foi destruído na medição — não houve clonagem. O teletransporte quântico respeita o teorema da não-clonagem da mecânica quântica.',
+                formula: '|ψ⟩_Bob = α|0⟩ + β|1⟩   ✓'
+            }
+        ];
+
+        const sim = {
+            psi: { theta: Math.PI / 3, phi: Math.PI / 4 },
+            step: 0,
+            playing: false,
+            m1: null,
+            m2: null
+        };
+
+        let playInterval = null;
+
+        // ============================================================
+        // CLASSE BLOCH SPHERE
+        // ============================================================
+        class BlochSphere {
+            constructor(canvas, opts = {}) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.theta = opts.theta ?? Math.PI / 3;
+                this.phi = opts.phi ?? Math.PI / 4;
+                this.color = opts.color ?? '#fbbf24';
+                this.label = opts.label ?? '';
+                this.interactive = opts.interactive ?? false;
+                this.mixed = false;
+                this.classicalState = null;
+                this.rotY = 0.5;
+                this.rotX = -0.3;
+                this.autoRotate = opts.autoRotate ?? false;
+                this.targetTheta = this.theta;
+                this.targetPhi = this.phi;
+                this.onChange = opts.onChange ?? (() => { });
+                this.size = 1;
+                this.targetSize = 1;
+                this.opacity = 1;
+                this.targetOpacity = 1;
+                this.glow = 0;
+                this.targetGlow = 0;
+
+                this.resize();
+                if (this.interactive) this.attachEvents();
+                window.addEventListener('resize', () => this.resize());
+                this.animate();
+            }
+
+            resize() {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = this.canvas.getBoundingClientRect();
+                if (rect.width === 0) return;
+                this.canvas.width = rect.width * dpr;
+                this.canvas.height = rect.height * dpr;
+                this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+                this.ctx.scale(dpr, dpr);
+                this.w = rect.width;
+                this.h = rect.height;
+            }
+
+            attachEvents() {
+                let dragging = false;
+                let lastX, lastY;
+
+                const getXY = (e) => {
+                    const pt = e.touches ? e.touches[0] : e;
+                    return { x: pt.clientX, y: pt.clientY };
+                };
+
+                const onDown = (e) => {
+                    dragging = true;
+                    const { x, y } = getXY(e);
+                    lastX = x; lastY = y;
+                    e.preventDefault();
+                };
+
+                const onMove = (e) => {
+                    if (!dragging) return;
+                    const { x, y } = getXY(e);
+                    const dx = x - lastX;
+                    const dy = y - lastY;
+                    lastX = x; lastY = y;
+
+                    this.phi += dx * 0.013;
+                    this.theta = Math.max(0.02, Math.min(Math.PI - 0.02, this.theta + dy * 0.013));
+                    this.targetTheta = this.theta;
+                    this.targetPhi = this.phi;
+                    this.onChange(this.theta, this.phi);
+                    e.preventDefault();
+                };
+
+                const onUp = () => { dragging = false; };
+
+                this.canvas.addEventListener('mousedown', onDown);
+                this.canvas.addEventListener('touchstart', onDown, { passive: false });
+                window.addEventListener('mousemove', onMove);
+                window.addEventListener('touchmove', onMove, { passive: false });
+                window.addEventListener('mouseup', onUp);
+                window.addEventListener('touchend', onUp);
+            }
+
+            setState(theta, phi) {
+                this.targetTheta = theta;
+                this.targetPhi = phi;
+            }
+
+            setMixed(mixed) {
+                this.mixed = mixed;
+                if (mixed) this.classicalState = null;
+            }
+
+            setClassical(value) {
+                this.classicalState = value;
+                if (value !== null) {
+                    this.mixed = false;
+                    if (value === 0) {
+                        this.targetTheta = 0;
+                        this.targetPhi = 0;
+                    } else {
+                        this.targetTheta = Math.PI;
+                        this.targetPhi = 0;
+                    }
+                }
+            }
+
+            setGlow(value) {
+                this.targetGlow = value;
+            }
+
+            project(x, y, z, cx, cy, r) {
+                const x1 = x * Math.cos(this.rotY) + z * Math.sin(this.rotY);
+                const z1 = -x * Math.sin(this.rotY) + z * Math.cos(this.rotY);
+                const y1 = y;
+                const y2 = y1 * Math.cos(this.rotX) - z1 * Math.sin(this.rotX);
+                const z2 = y1 * Math.sin(this.rotX) + z1 * Math.cos(this.rotX);
+                return { x: cx + x1 * r, y: cy - y2 * r, z: z2 };
+            }
+
+            animate() {
+                this.theta += (this.targetTheta - this.theta) * 0.15;
+                this.phi += (this.targetPhi - this.phi) * 0.15;
+                this.size += (this.targetSize - this.size) * 0.15;
+                this.opacity += (this.targetOpacity - this.opacity) * 0.15;
+                this.glow += (this.targetGlow - this.glow) * 0.1;
+
+                if (this.autoRotate) this.rotY += 0.003;
+
+                this.draw();
+                requestAnimationFrame(() => this.animate());
+            }
+
+            draw() {
+                if (!this.w || !this.h) return;
+                const ctx = this.ctx;
+                const w = this.w, h = this.h;
+                ctx.clearRect(0, 0, w, h);
+
+                ctx.globalAlpha = this.opacity;
+
+                const cx = w / 2;
+                const cy = h / 2;
+                const r = Math.max(10, Math.min(w, h) * 0.38 * this.size);
+
+                // Background glow
+                const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 1.6);
+                bgGrad.addColorStop(0, this.color + '22');
+                bgGrad.addColorStop(1, this.color + '00');
+                ctx.fillStyle = bgGrad;
+                ctx.fillRect(0, 0, w, h);
+
+                // Sphere fill
+                const sphereGrad = ctx.createRadialGradient(cx - r * 0.35, cy - r * 0.35, 0, cx, cy, r);
+                sphereGrad.addColorStop(0, 'rgba(255, 255, 255, 0.04)');
+                sphereGrad.addColorStop(0.6, 'rgba(255, 255, 255, 0.01)');
+                sphereGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                ctx.fillStyle = sphereGrad;
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+                ctx.fill();
+
+                // Latitudes
+                for (let i = 1; i < 4; i++) {
+                    const lat = (i / 4) * Math.PI - Math.PI / 2;
+                    this.drawLatitude(cx, cy, r, lat, i === 2 ? 0.32 : 0.13);
+                }
+
+                // Longitudes
+                for (let i = 0; i < 6; i++) {
+                    const lon = (i / 6) * Math.PI;
+                    this.drawLongitude(cx, cy, r, lon, 0.13);
+                }
+
+                // Axes
+                this.drawAxis(cx, cy, r, 0, 0, 1, '|0⟩');
+                this.drawAxis(cx, cy, r, 0, 0, -1, '|1⟩');
+                this.drawAxis(cx, cy, r, 1, 0, 0, '|+⟩');
+                this.drawAxis(cx, cy, r, -1, 0, 0, '|−⟩');
+
+                // State
+                if (this.mixed) {
+                    this.drawMixedState(cx, cy, r);
+                } else {
+                    this.drawStateVector(cx, cy, r);
+                }
+
+                // Label
+                if (this.label) {
+                    ctx.font = '600 13px "Space Grotesk"';
+                    ctx.fillStyle = this.color;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(this.label, cx, h - 12);
+                }
+
+                ctx.globalAlpha = 1;
+            }
+
+            drawLatitude(cx, cy, r, lat, alpha) {
+                const ctx = this.ctx;
+                ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                const steps = 64;
+                for (let i = 0; i <= steps; i++) {
+                    const lon = (i / steps) * 2 * Math.PI;
+                    const x = Math.cos(lat) * Math.cos(lon);
+                    const y = Math.cos(lat) * Math.sin(lon);
+                    const z = Math.sin(lat);
+                    const p = this.project(x, y, z, cx, cy, r);
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                }
+                ctx.stroke();
+            }
+
+            drawLongitude(cx, cy, r, lon, alpha) {
+                const ctx = this.ctx;
+                ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                const steps = 64;
+                for (let i = 0; i <= steps; i++) {
+                    const lat = (i / steps) * Math.PI - Math.PI / 2;
+                    const x = Math.cos(lat) * Math.cos(lon);
+                    const y = Math.cos(lat) * Math.sin(lon);
+                    const z = Math.sin(lat);
+                    const p = this.project(x, y, z, cx, cy, r);
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                }
+                ctx.stroke();
+            }
+
+            drawAxis(cx, cy, r, x, y, z, label) {
+                const ctx = this.ctx;
+                const p1 = this.project(0, 0, 0, cx, cy, r);
+                const p2 = this.project(x, y, z, cx, cy, r);
+                const p2ext = this.project(x * 1.22, y * 1.22, z * 1.22, cx, cy, r);
+
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.font = '500 11px "JetBrains Mono"';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(label, p2ext.x, p2ext.y);
+            }
+
+            drawStateVector(cx, cy, r) {
+                const ctx = this.ctx;
+                const x = Math.sin(this.theta) * Math.cos(this.phi);
+                const y = Math.sin(this.theta) * Math.sin(this.phi);
+                const z = Math.cos(this.theta);
+                const p = this.project(x, y, z, cx, cy, r);
+                const origin = this.project(0, 0, 0, cx, cy, r);
+                const pShadow = this.project(x, y, 0, cx, cy, r);
+
+                // Shadow
+                ctx.strokeStyle = this.color + '40';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([2, 2]);
+                ctx.beginPath();
+                ctx.moveTo(pShadow.x, pShadow.y);
+                ctx.lineTo(p.x, p.y);
+                ctx.moveTo(origin.x, origin.y);
+                ctx.lineTo(pShadow.x, pShadow.y);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Vector
+                const grad = ctx.createLinearGradient(origin.x, origin.y, p.x, p.y);
+                grad.addColorStop(0, this.color + '80');
+                grad.addColorStop(1, this.color);
+                ctx.strokeStyle = grad;
+                ctx.lineWidth = 2.5;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.moveTo(origin.x, origin.y);
+                ctx.lineTo(p.x, p.y);
+                ctx.stroke();
+
+                // Glow
+                const glowR = 18 + this.glow * 12;
+                const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
+                glow.addColorStop(0, this.color);
+                glow.addColorStop(0.25, this.color + '99');
+                glow.addColorStop(1, this.color + '00');
+                ctx.fillStyle = glow;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, glowR, 0, 2 * Math.PI);
+                ctx.fill();
+
+                // Point
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 5, 0, 2 * Math.PI);
+                ctx.fill();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 2, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+
+            drawMixedState(cx, cy, r) {
+                const ctx = this.ctx;
+                const origin = this.project(0, 0, 0, cx, cy, r);
+                const t = Date.now() * 0.001;
+
+                // Cloud layers
+                for (let layer = 0; layer < 3; layer++) {
+                    const radius = (10 + layer * 7) + Math.sin(t * 2 + layer) * 2;
+                    const alpha = 0.35 - layer * 0.1;
+                    const glow = ctx.createRadialGradient(origin.x, origin.y, 0, origin.x, origin.y, radius);
+                    const hex = Math.floor(alpha * 255).toString(16).padStart(2, '0');
+                    glow.addColorStop(0, this.color + hex);
+                    glow.addColorStop(1, this.color + '00');
+                    ctx.fillStyle = glow;
+                    ctx.beginPath();
+                    ctx.arc(origin.x, origin.y, radius, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+
+                // Orbiting dots
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * 2 * Math.PI + t * 0.6;
+                    const dist = 16 + Math.sin(t * 2 + i) * 3;
+                    const x = origin.x + Math.cos(angle) * dist;
+                    const y = origin.y + Math.sin(angle) * dist * 0.7;
+                    ctx.fillStyle = this.color + 'dd';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 1.6, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(origin.x, origin.y, 3, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+        }
+
+        // ============================================================
+        // BACKGROUND DE PARTÍCULAS
+        // ============================================================
+        class ParticleBackground {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.particles = [];
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+                this.animate();
+            }
+
+            resize() {
+                const dpr = window.devicePixelRatio || 1;
+                this.canvas.width = window.innerWidth * dpr;
+                this.canvas.height = window.innerHeight * dpr;
+                this.canvas.style.width = window.innerWidth + 'px';
+                this.canvas.style.height = window.innerHeight + 'px';
+                this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+                this.ctx.scale(dpr, dpr);
+                this.w = window.innerWidth;
+                this.h = window.innerHeight;
+
+                const count = Math.min(70, Math.floor(this.w * this.h / 22000));
+                this.particles = [];
+                const colors = ['#2dd4bf', '#fb7185', '#34d399', '#fbbf24'];
+                for (let i = 0; i < count; i++) {
+                    this.particles.push({
+                        x: Math.random() * this.w,
+                        y: Math.random() * this.h,
+                        vx: (Math.random() - 0.5) * 0.18,
+                        vy: (Math.random() - 0.5) * 0.18,
+                        r: Math.random() * 1.4 + 0.4,
+                        opacity: Math.random() * 0.4 + 0.15,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        phase: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+
+            animate() {
+                const ctx = this.ctx;
+                ctx.clearRect(0, 0, this.w, this.h);
+                const t = Date.now() * 0.001;
+
+                this.particles.forEach((p, i) => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0) p.x = this.w;
+                    if (p.x > this.w) p.x = 0;
+                    if (p.y < 0) p.y = this.h;
+                    if (p.y > this.h) p.y = 0;
+
+                    const pulse = Math.sin(t + p.phase) * 0.3 + 0.7;
+                    const op = p.opacity * pulse;
+                    const hex = Math.floor(op * 255).toString(16).padStart(2, '0');
+
+                    ctx.fillStyle = p.color + hex;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, 2 * Math.PI);
+                    ctx.fill();
+
+                    for (let j = i + 1; j < this.particles.length; j++) {
+                        const p2 = this.particles[j];
+                        const dx = p.x - p2.x;
+                        const dy = p.y - p2.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 130) {
+                            const lineOp = (1 - dist / 130) * 0.12 * pulse;
+                            const lineHex = Math.floor(lineOp * 255).toString(16).padStart(2, '0');
+                            ctx.strokeStyle = p.color + lineHex;
+                            ctx.lineWidth = 0.5;
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.stroke();
+                        }
+                    }
+                });
+
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // ============================================================
+        // INICIALIZAÇÃO
+        // ============================================================
+        new ParticleBackground(document.getElementById('bgCanvas'));
+
+        const psiSphereInput = new BlochSphere(document.getElementById('psiSphereInput'), {
+            theta: sim.psi.theta,
+            phi: sim.psi.phi,
+            color: '#fbbf24',
+            label: 'arraste para definir |ψ⟩',
+            interactive: true,
+            onChange: (theta, phi) => {
+                sim.psi = { theta, phi };
+                updatePresetActive(theta, phi);
+                updateStateDisplay();
+                updateSpheresForStep(sim.step);
+            }
+        });
+
+        const spherePsi = new BlochSphere(document.getElementById('spherePsi'), {
+            theta: sim.psi.theta,
+            phi: sim.psi.phi,
+            color: '#fbbf24',
+            label: '|ψ⟩ (Alice)',
+            interactive: false
+        });
+
+        const sphereA = new BlochSphere(document.getElementById('sphereA'), {
+            theta: 0,
+            phi: 0,
+            color: '#fb7185',
+            label: 'qubit A (Alice)',
+            interactive: false
+        });
+
+        const sphereB = new BlochSphere(document.getElementById('sphereB'), {
+            theta: 0,
+            phi: 0,
+            color: '#34d399',
+            label: 'qubit B (Bob)',
+            interactive: false
+        });
+
+        // ============================================================
+        // LÓGICA DO SIMULADOR
+        // ============================================================
+        function computeBobState(psi, m1, m2) {
+            let { theta, phi } = psi;
+            if (m1 === 1 && m2 === 0) {
+                return { theta, phi: phi + Math.PI };
+            } else if (m1 === 0 && m2 === 1) {
+                return { theta: Math.PI - theta, phi: -phi };
+            } else if (m1 === 1 && m2 === 1) {
+                return { theta: Math.PI - theta, phi: Math.PI - phi };
+            }
+            return { theta, phi };
+        }
+
+        function updateStep(step) {
+            sim.step = step;
+            const info = STEPS[step];
+
+            document.getElementById('stepPill').textContent = `Passo ${step + 1} de ${STEPS.length}`;
+            document.getElementById('stepTitle').textContent = info.title;
+            document.getElementById('stepDesc').textContent = info.desc;
+            document.getElementById('stepFormula').textContent = info.formula;
+
+            updateProgressBar(step);
+            updateSpheresForStep(step);
+            updateCircuit(step);
+            updateBitsAndStatus(step);
+            updateStateDisplay();
+
+            document.getElementById('btnPrev').disabled = step === 0;
+            document.getElementById('btnNext').disabled = step === STEPS.length - 1;
+
+            if (step === STEPS.length - 1) {
+                sphereB.setGlow(1);
+                showToast('|ψ⟩ teletransportado com sucesso!');
+            } else {
+                sphereB.setGlow(0);
+            }
+        }
+
+        function updateProgressBar(step) {
+            const bar = document.getElementById('progressBar');
+            bar.innerHTML = '';
+            for (let i = 0; i < STEPS.length; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'progress-dot';
+                if (i < step) dot.classList.add('done');
+                else if (i === step) dot.classList.add('current');
+                dot.addEventListener('click', () => {
+                    if (i <= step + 1 || i >= step - 1) {
+                        pause();
+                        updateStep(i);
+                    }
+                });
+                bar.appendChild(dot);
+            }
+        }
+
+        function updateSpheresForStep(step) {
+            // Reset
+            spherePsi.setMixed(false);
+            sphereA.setMixed(false);
+            sphereB.setMixed(false);
+            spherePsi.setClassical(null);
+            sphereA.setClassical(null);
+            sphereB.setClassical(null);
+
+            switch (step) {
+                case 0:
+                    spherePsi.setState(sim.psi.theta, sim.psi.phi);
+                    sphereA.setState(0, 0);
+                    sphereB.setState(0, 0);
+                    break;
+                case 1:
+                case 2:
+                    spherePsi.setState(sim.psi.theta, sim.psi.phi);
+                    sphereA.setMixed(true);
+                    sphereB.setMixed(true);
+                    break;
+                case 3:
+                case 4:
+                    spherePsi.setMixed(true);
+                    sphereA.setMixed(true);
+                    sphereB.setMixed(true);
+                    break;
+                case 5:
+                case 6:
+                    if (sim.m1 === null) {
+                        sim.m1 = Math.random() < 0.5 ? 0 : 1;
+                        sim.m2 = Math.random() < 0.5 ? 0 : 1;
+                    }
+                    spherePsi.setClassical(sim.m1);
+                    sphereA.setClassical(sim.m2);
+                    const bs = computeBobState(sim.psi, sim.m1, sim.m2);
+                    sphereB.setState(bs.theta, bs.phi);
+                    break;
+                case 7:
+                case 8:
+                    spherePsi.setClassical(sim.m1);
+                    sphereA.setClassical(sim.m2);
+                    sphereB.setState(sim.psi.theta, sim.psi.phi);
+                    break;
+            }
+        }
+
+        function updateCircuit(step) {
+            // Mapear passo do simulador para passo do circuito
+            // Passo 1 (emaranhamento) → ativa gates do step 1
+            // Passo 3 (CNOT) → ativa gate do step 3
+            // Passo 4 (H) → ativa gate do step 4
+            // Passo 5 (medição) → ativa gates do step 5
+            // Passo 6 (comunicação) → ativa wires do step 6
+            // Passo 7 (correção) → ativa gates do step 7
+
+            const gateStepMap = {
+                1: [1],  // Bell pair
+                3: [3],  // CNOT(ψ,A)
+                4: [4],  // H(ψ)
+                5: [5],  // Medição
+                6: [6],  // Canal clássico
+                7: [7]   // Correção
+            };
+
+            document.querySelectorAll('[data-step]').forEach(el => {
+                const gateStep = parseInt(el.dataset.step);
+                el.classList.remove('active', 'done', 'pending');
+
+                // Determinar se este gate está ativo no passo atual
+                let active = false;
+                let alreadyDone = false;
+
+                // Passo 1 (sim) → gate step 1 ativo
+                if (step === 1 && gateStep === 1) active = true;
+                else if (step === 3 && gateStep === 3) active = true;
+                else if (step === 4 && gateStep === 4) active = true;
+                else if (step === 5 && (gateStep === 5)) active = true;
+                else if (step === 6 && gateStep === 6) active = true;
+                else if (step === 7 && gateStep === 7) active = true;
+
+                // Já executado?
+                if (step > 1 && gateStep === 1) alreadyDone = true;
+                if (step > 3 && gateStep === 3) alreadyDone = true;
+                if (step > 4 && gateStep === 4) alreadyDone = true;
+                if (step > 5 && gateStep === 5) alreadyDone = true;
+                if (step > 6 && gateStep === 6) alreadyDone = true;
+                if (step > 7 && gateStep === 7) alreadyDone = true;
+
+                if (active) el.classList.add('active');
+                else if (alreadyDone) el.classList.add('done');
+                else el.classList.add('pending');
+            });
+        }
+
+        function updateBitsAndStatus(step) {
+            const bit1 = document.getElementById('bit1');
+            const bit2 = document.getElementById('bit2');
+            const message = document.getElementById('message');
+            const correction = document.getElementById('correction');
+            const status = document.getElementById('status');
+
+            if (step >= 5 && sim.m1 !== null) {
+                bit1.textContent = sim.m1;
+                bit1.classList.add('set');
+                bit2.textContent = sim.m2;
+                bit2.classList.add('set');
+                message.textContent = `m₁m₂ = ${sim.m1}${sim.m2}`;
+                message.style.color = 'var(--measure)';
+            } else {
+                bit1.textContent = '·';
+                bit1.classList.remove('set');
+                bit2.textContent = '·';
+                bit2.classList.remove('set');
+                message.textContent = '—';
+                message.style.color = 'var(--text-3)';
+            }
+
+            if (step < 5) {
+                correction.textContent = '—';
+                correction.style.color = 'var(--text-3)';
+                status.textContent = 'Aguardando medição...';
+                status.style.color = 'var(--text-3)';
+            } else if (step < 7) {
+                const m1m2 = `${sim.m1}${sim.m2}`;
+                let corr;
+                if (m1m2 === '00') corr = 'I';
+                else if (m1m2 === '01') corr = 'X';
+                else if (m1m2 === '10') corr = 'Z';
+                else corr = 'ZX';
+                correction.textContent = corr;
+                correction.style.color = 'var(--measure)';
+                status.textContent = 'Bob aguarda os bits...';
+                status.style.color = 'var(--measure)';
+            } else if (step === 7) {
+                correction.textContent = 'Aplicada';
+                correction.style.color = 'var(--accent)';
+                status.textContent = 'Corrigindo...';
+                status.style.color = 'var(--accent)';
+            } else {
+                correction.textContent = 'Aplicada ✓';
+                correction.style.color = 'var(--success)';
+                status.textContent = '|ψ⟩ recebido!';
+                status.style.color = 'var(--success)';
+            }
+        }
+
+        function formatAngle(rad) {
+            const piFrac = rad / Math.PI;
+            const denominators = [1, 2, 3, 4, 6];
+            for (const d of denominators) {
+                const n = piFrac * d;
+                if (Math.abs(n - Math.round(n)) < 0.02) {
+                    const num = Math.round(n);
+                    if (num === 0) return '0';
+                    if (d === 1) return num === 1 ? 'π' : (num === -1 ? '−π' : `${num}π`);
+                    const sign = num < 0 ? '−' : '';
+                    return `${sign}${Math.abs(num)}π/${d}`;
+                }
+            }
+            return (rad / Math.PI).toFixed(2) + 'π';
+        }
+
+        function formatQuantumState(theta, phi) {
+            const alpha = Math.cos(theta / 2);
+            const beta = Math.sin(theta / 2);
+
+            if (Math.abs(alpha - 1) < 0.01) return '|ψ⟩ = |0⟩';
+            if (Math.abs(beta - 1) < 0.01) return '|ψ⟩ = |1⟩';
+
+            const isSqrt2 = (v) => Math.abs(v - 1 / Math.sqrt(2)) < 0.04;
+
+            const aStr = isSqrt2(Math.abs(alpha)) ? '1/√2' : Math.abs(alpha).toFixed(2);
+
+            let phase = '';
+            const phiNorm = ((phi % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+            if (phiNorm < 0.05 || phiNorm > 2 * Math.PI - 0.05) phase = '';
+            else if (Math.abs(phiNorm - Math.PI) < 0.05) phase = '-';
+            else if (Math.abs(phiNorm - Math.PI / 2) < 0.05) phase = 'i';
+            else if (Math.abs(phiNorm - 3 * Math.PI / 2) < 0.05) phase = '-i';
+            else phase = `e^(iφ)·`;
+
+            const bStr = isSqrt2(Math.abs(beta)) ? '1/√2' : Math.abs(beta).toFixed(2);
+
+            if (phase === '') return `|ψ⟩ = ${aStr}|0⟩ + ${bStr}|1⟩`;
+            if (phase === '-') return `|ψ⟩ = ${aStr}|0⟩ − ${bStr}|1⟩`;
+            return `|ψ⟩ = ${aStr}|0⟩ + ${phase}${bStr}|1⟩`;
+        }
+
+        function updateStateDisplay() {
+            const { theta, phi } = sim.psi;
+            document.getElementById('thetaVal').textContent = formatAngle(theta);
+            document.getElementById('phiVal').textContent = formatAngle(phi);
+            document.getElementById('statePsi').textContent = formatQuantumState(theta, phi);
+
+            const stateA = document.getElementById('stateA');
+            const stateB = document.getElementById('stateB');
+
+            if (sim.step <= 0) {
+                stateA.textContent = '|0⟩';
+                stateB.textContent = '|0⟩';
+            } else if (sim.step <= 2) {
+                stateA.textContent = 'estado misto (I/2)';
+                stateB.textContent = 'estado misto (I/2)';
+            } else if (sim.step <= 4) {
+                stateA.textContent = 'emaranhado';
+                stateB.textContent = 'emaranhado';
+            } else if (sim.step === 5 || sim.step === 6) {
+                stateA.textContent = `|${sim.m2}⟩`;
+                const bs = computeBobState(sim.psi, sim.m1, sim.m2);
+                const ops = ['I', 'X', 'Z', 'XZ'];
+                const idx = sim.m1 * 2 + sim.m2;
+                stateB.textContent = `${ops[idx]}|ψ⟩`;
+            } else {
+                stateA.textContent = `|${sim.m2}⟩`;
+                stateB.textContent = formatQuantumState(theta, phi);
+            }
+        }
+
+        function updatePresetActive(theta, phi) {
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                const preset = PRESETS[parseInt(btn.dataset.preset)];
+                if (preset.name === 'rand') return;
+                if (Math.abs(preset.theta - theta) < 0.02 && Math.abs(preset.phi - phi) < 0.02) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        // ============================================================
+        // CONTROLES
+        // ============================================================
+        function play() {
+            sim.playing = true;
+            document.getElementById('playText').textContent = 'Pausar';
+            document.getElementById('playIcon').innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+
+            if (sim.step >= STEPS.length - 1) {
+                reset();
+            }
+
+            playInterval = setInterval(() => {
+                if (sim.step < STEPS.length - 1) {
+                    updateStep(sim.step + 1);
+                } else {
+                    pause();
+                }
+            }, 2800);
+        }
+
+        function pause() {
+            sim.playing = false;
+            document.getElementById('playText').textContent = 'Iniciar';
+            document.getElementById('playIcon').innerHTML = '<polygon points="5 3 19 12 5 21"/>';
+            if (playInterval) {
+                clearInterval(playInterval);
+                playInterval = null;
+            }
+        }
+
+        function togglePlay() {
+            if (sim.playing) pause();
+            else play();
+        }
+
+        function reset() {
+            pause();
+            sim.m1 = null;
+            sim.m2 = null;
+            updateStep(0);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Event listeners
+        document.getElementById('btnPrev').addEventListener('click', () => {
+            pause();
+            if (sim.step > 0) updateStep(sim.step - 1);
+        });
+
+        document.getElementById('btnNext').addEventListener('click', () => {
+            pause();
+            if (sim.step < STEPS.length - 1) updateStep(sim.step + 1);
+        });
+
+        document.getElementById('btnPlay').addEventListener('click', togglePlay);
+        document.getElementById('btnReset').addEventListener('click', reset);
+
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const preset = PRESETS[parseInt(btn.dataset.preset)];
+                let theta = preset.theta;
+                let phi = preset.phi;
+                if (preset.name === 'rand') {
+                    theta = Math.random() * Math.PI;
+                    phi = Math.random() * 2 * Math.PI - Math.PI;
+                }
+                sim.psi = { theta, phi };
+                psiSphereInput.setState(theta, phi);
+                if (sim.step === 0) {
+                    spherePsi.setState(theta, phi);
+                }
+                updatePresetActive(theta, phi);
+                updateStateDisplay();
+                updateSpheresForStep(sim.step);
+            });
+        });
+
+        // Teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return;
+            if (e.key === 'ArrowRight') {
+                pause();
+                if (sim.step < STEPS.length - 1) updateStep(sim.step + 1);
+            } else if (e.key === 'ArrowLeft') {
+                pause();
+                if (sim.step > 0) updateStep(sim.step - 1);
+            } else if (e.key === ' ') {
+                e.preventDefault();
+                togglePlay();
+            } else if (e.key === 'r' || e.key === 'R') {
+                reset();
+            }
+        });
+
+        // Init
+        updateStep(0);
+    </script>
+</body>
+
+</html>

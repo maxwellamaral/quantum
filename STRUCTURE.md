@@ -4,6 +4,8 @@
 
 ```
 quantum/
+├── CURSO.md            # 🎓 Trilha guiada do curso de extensão
+│
 ├── notebooks/          # 📚 Notebooks Jupyter educacionais
 │   ├── 00a-math.ipynb
 │   ├── 00b-phases.ipynb
@@ -27,7 +29,10 @@ quantum/
 │   ├── quantum_viz.py
 │   └── README.md
 │
-├── assets/             # 🖼️ Recursos (imagens, vídeos, etc.)
+├── assets/
+│   └── simuladores/    # 🔮 Simuladores HTML interativos
+├── docs/
+│   └── historia/       # 📜 Mini-curso histórico (física → qubits)
 │
 ├── README.md           # 📖 Documentação principal
 ├── LICENSE             # 📄 Licença MIT

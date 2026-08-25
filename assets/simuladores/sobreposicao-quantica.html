@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Sobreposição Quântica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                fontFamily: {
+                    display: ['Space Grotesk', 'sans-serif'],
+                    mono: ['JetBrains Mono', 'monospace'],
+                },
+                colors: {
+                    q: {
+                        bg: '#07070d',
+                        card: 'rgba(14,14,24,0.75)',
+                        border: 'rgba(255,255,255,0.06)',
+                        fg: '#e4e4ef',
+                        muted: '#5a5a72',
+                        cyan: '#00e5ff',
+                        magenta: '#ff0080',
+                        gold: '#ffc400',
+                        green: '#00ff88',
+                    }
+                }
+            }
+        }
+    }
+    </script>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { background: #07070d; }
+
+        /* Blobs de fundo animados */
+        .bg-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .blob-1 { width: 500px; height: 500px; background: #00e5ff; top: -10%; left: -5%; animation: blobFloat1 20s ease-in-out infinite; }
+        .blob-2 { width: 400px; height: 400px; background: #ff0080; bottom: -10%; right: -5%; animation: blobFloat2 25s ease-in-out infinite; }
+        .blob-3 { width: 300px; height: 300px; background: #ffc400; top: 50%; left: 50%; transform: translate(-50%,-50%); animation: blobFloat3 18s ease-in-out infinite; }
+
+        @keyframes blobFloat1 { 0%,100%{ transform: translate(0,0) scale(1); } 50%{ transform: translate(80px,60px) scale(1.15); } }
+        @keyframes blobFloat2 { 0%,100%{ transform: translate(0,0) scale(1); } 50%{ transform: translate(-60px,-80px) scale(1.1); } }
+        @keyframes blobFloat3 { 0%,100%{ transform: translate(-50%,-50%) scale(1); } 50%{ transform: translate(-40%,-60%) scale(1.2); } }
+
+        /* Grid sutil de fundo */
+        .bg-grid {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* Cards com glassmorphism */
+        .glass {
+            background: rgba(14,14,24,0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+        }
+
+        /* Sliders customizados */
+        input[type=range] {
+            -webkit-appearance: none; appearance: none;
+            width: 100%; height: 6px; border-radius: 3px;
+            background: rgba(255,255,255,0.08); outline: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: #00e5ff; cursor: pointer;
+            box-shadow: 0 0 12px rgba(0,229,255,0.5);
+            transition: box-shadow 0.2s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            box-shadow: 0 0 20px rgba(0,229,255,0.8);
+        }
+        input[type=range]::-moz-range-thumb {
+            width: 20px; height: 20px; border-radius: 50%;
+            background: #00e5ff; cursor: pointer; border: none;
+            box-shadow: 0 0 12px rgba(0,229,255,0.5);
+        }
+
+        /* Barra de probabilidade animada */
+        .prob-bar {
+            height: 32px; border-radius: 8px;
+            transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative; overflow: hidden;
+        }
+        .prob-bar::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+            animation: shimmer 2s ease-in-out infinite;
+        }
+        @keyframes shimmer { 0%{ transform: translateX(-100%); } 100%{ transform: translateX(100%); } }
+
+        /* Botão de medição pulsante */
+        .measure-btn {
+            position: relative; overflow: hidden;
+            transition: all 0.3s;
+        }
+        .measure-btn::before {
+            content: ''; position: absolute; inset: -2px;
+            background: conic-gradient(from 0deg, #00e5ff, #ff0080, #ffc400, #00e5ff);
+            border-radius: inherit; z-index: -1;
+            animation: rotateBorder 3s linear infinite;
+        }
+        .measure-btn::after {
+            content: ''; position: absolute; inset: 2px;
+            background: #0e0e18; border-radius: inherit; z-index: -1;
+        }
+        @keyframes rotateBorder { to { transform: rotate(360deg); } }
+        .measure-btn:hover { transform: scale(1.03); }
+        .measure-btn:active { transform: scale(0.97); }
+
+        /* Preset buttons */
+        .preset-btn {
+            transition: all 0.25s;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .preset-btn:hover {
+            border-color: rgba(0,229,255,0.4);
+            background: rgba(0,229,255,0.08);
+            transform: translateY(-1px);
+        }
+        .preset-btn.active {
+            border-color: rgba(0,229,255,0.6);
+            background: rgba(0,229,255,0.12);
+            box-shadow: 0 0 16px rgba(0,229,255,0.15);
+        }
+
+        /* Bolinhas do stream de medições */
+        .measure-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            display: inline-block; animation: dotIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            flex-shrink: 0;
+        }
+        @keyframes dotIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* Colapso flash */
+        .collapse-flash {
+            position: absolute; inset: 0; border-radius: 16px;
+            pointer-events: none; opacity: 0;
+            transition: opacity 0.1s;
+        }
+        .collapse-flash.active {
+            opacity: 1;
+            animation: flashPulse 0.6s ease-out forwards;
+        }
+        @keyframes flashPulse { 0%{ opacity: 0.6; } 100%{ opacity: 0; } }
+
+        /* Explicação transição suave */
+        .explanation-text { transition: opacity 0.3s; }
+
+        /* Container da esfera */
+        #bloch-container canvas { border-radius: 16px; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+        /* Badge colapsado */
+        .collapsed-badge {
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+        @keyframes badgePulse { 0%,100%{ opacity: 1; } 50%{ opacity: 0.6; } }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+    </style>
+</head>
+<body class="text-q-fg font-display min-h-screen overflow-x-hidden relative">
+
+    <!-- Fundo -->
+    <div class="bg-grid"></div>
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+
+    <!-- Conteúdo principal -->
+    <div class="relative z-10">
+
+        <!-- Header -->
+        <header class="pt-6 pb-2 px-4 max-w-7xl mx-auto">
+            <div class="flex items-center gap-3 mb-1">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-q-cyan to-q-magenta flex items-center justify-center">
+                    <i class="fa-solid fa-atom text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold tracking-tight">Sobreposição Quântica</h1>
+                    <p class="text-q-muted text-sm font-light">Simulador interativo da Esfera de Bloch</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main -->
+        <main class="max-w-7xl mx-auto px-4 py-4">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+                <!-- Coluna esquerda: Esfera + Histograma -->
+                <div class="lg:col-span-7 space-y-5">
+
+                    <!-- Esfera de Bloch -->
+                    <div class="glass p-1 relative" id="bloch-card">
+                        <div id="bloch-container" class="w-full rounded-2xl overflow-hidden" style="aspect-ratio: 4/3; min-height: 360px;"></div>
+                        <div class="collapse-flash" id="collapse-flash"></div>
+                        <!-- Legenda da esfera -->
+                        <div class="absolute bottom-4 left-4 right-4 flex justify-between text-xs text-q-muted font-mono pointer-events-none">
+                            <span><span class="text-q-green">X</span> : |+⟩ / |-⟩</span>
+                            <span><span class="text-q-gold">Y</span> : |i⟩ / |-i⟩</span>
+                            <span><span class="text-white">Z</span> : |0⟩ / |1⟩</span>
+                        </div>
+                    </div>
+
+                    <!-- Histograma de medições -->
+                    <div class="glass p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-semibold tracking-wide uppercase text-q-muted">Resultado das Medições</h3>
+                            <span class="text-xs font-mono text-q-muted" id="total-count">0 medições</span>
+                        </div>
+
+                        <!-- Barras -->
+                        <div class="space-y-3 mb-4">
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-q-cyan text-sm w-8 text-right">|0⟩</span>
+                                <div class="flex-1 bg-white/5 rounded-lg overflow-hidden h-8 relative">
+                                    <div class="prob-bar bg-gradient-to-r from-q-cyan/80 to-q-cyan/50" id="bar-0" style="width: 50%"></div>
+                                    <span class="absolute inset-0 flex items-center px-3 text-xs font-mono font-medium text-white" id="bar-0-text">50,0%</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-q-magenta text-sm w-8 text-right">|1⟩</span>
+                                <div class="flex-1 bg-white/5 rounded-lg overflow-hidden h-8 relative">
+                                    <div class="prob-bar bg-gradient-to-r from-q-magenta/80 to-q-magenta/50" id="bar-1" style="width: 50%"></div>
+                                    <span class="absolute inset-0 flex items-center px-3 text-xs font-mono font-medium text-white" id="bar-1-text">50,0%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stream de bolinhas -->
+                        <div class="flex items-center gap-1.5 overflow-hidden h-5 flex-wrap" id="measure-stream">
+                            <span class="text-xs text-q-muted italic" id="stream-placeholder">Nenhuma medição realizada ainda...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna direita: Controles e info -->
+                <div class="lg:col-span-5 space-y-5">
+
+                    <!-- Estado quântico -->
+                    <div class="glass p-5">
+                        <h3 class="text-xs font-semibold tracking-wide uppercase text-q-muted mb-3">Estado Quântico</h3>
+                        <div class="font-mono text-xl md:text-2xl text-center py-3 leading-relaxed" id="ket-display">
+                            |ψ⟩ = <span class="text-q-cyan">0,924</span>|0⟩ + <span class="text-q-magenta">0,383</span>|1⟩
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 mt-3 text-sm font-mono">
+                            <div class="bg-white/3 rounded-lg p-3 text-center">
+                                <div class="text-q-muted text-xs mb-1">α (coef. |0⟩)</div>
+                                <div class="text-q-cyan" id="alpha-display">0,924</div>
+                            </div>
+                            <div class="bg-white/3 rounded-lg p-3 text-center">
+                                <div class="text-q-muted text-xs mb-1">β (coef. |1⟩)</div>
+                                <div class="text-q-magenta" id="beta-display">0,383</div>
+                            </div>
+                        </div>
+                        <!-- Badge de colapso -->
+                        <div class="hidden mt-3 text-center" id="collapsed-badge">
+                            <span class="collapsed-badge inline-block px-4 py-1.5 rounded-full text-xs font-semibold bg-q-gold/15 text-q-gold border border-q-gold/30">
+                                <i class="fa-solid fa-circle-check mr-1"></i> Estado colapsado
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Probabilidades -->
+                    <div class="glass p-5">
+                        <h3 class="text-xs font-semibold tracking-wide uppercase text-q-muted mb-3">Probabilidades de Medição</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold font-mono text-q-cyan" id="prob-0">85,4%</div>
+                                <div class="text-xs text-q-muted mt-1">P(|0⟩) = |α|²</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold font-mono text-q-magenta" id="prob-1">14,6%</div>
+                                <div class="text-xs text-q-muted mt-1">P(|1⟩) = |β|²</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Controles θ e φ -->
+                    <div class="glass p-5">
+                        <h3 class="text-xs font-semibold tracking-wide uppercase text-q-muted mb-4">Parâmetros da Esfera de Bloch</h3>
+                        <div class="space-y-5">
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <label class="text-sm font-medium">θ (polar)</label>
+                                    <span class="font-mono text-q-cyan text-sm" id="theta-val">0,785 rad</span>
+                                </div>
+                                <input type="range" id="theta-slider" min="0" max="3.14159" step="0.01" value="0.785">
+                                <div class="flex justify-between text-xs text-q-muted mt-1 font-mono">
+                                    <span>0</span><span>π/2</span><span>π</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <label class="text-sm font-medium">φ (azimutal)</label>
+                                    <span class="font-mono text-q-gold text-sm" id="phi-val">0,000 rad</span>
+                                </div>
+                                <input type="range" id="phi-slider" min="0" max="6.28318" step="0.01" value="0">
+                                <div class="flex justify-between text-xs text-q-muted mt-1 font-mono">
+                                    <span>0</span><span>π</span><span>2π</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estados predefinidos -->
+                    <div class="glass p-5">
+                        <h3 class="text-xs font-semibold tracking-wide uppercase text-q-muted mb-3">Estados Notáveis</h3>
+                        <div class="grid grid-cols-3 gap-2" id="presets-grid">
+                            <button class="preset-btn rounded-lg py-2 px-1 text-center font-mono text-sm bg-white/3" data-theta="0" data-phi="0">|0⟩</button>
+                            <button class="preset-btn rounded-lg py-2 px-1 text-center font-mono text-sm bg-white/3" data-theta="3.14159" data-phi="0">|1⟩</button>
+                            <button class="preset-btn rounded-lg py-2 px-1 text-center font-mono text-sm bg-white/3" data-theta="1.5708" data-phi="0">|+⟩</button>
+                            <button class="preset-btn rounded-lg py-2 px-1 text-center font-mono text-sm bg-white/3" data-theta="1.5708" data-phi="3.14159">|-⟩</button>
+                            <button class="preset-btn rounded-lg py-2 px-1 text-center font-mono text-sm bg-white/3" data-theta="1.5708" data-phi="1.5708">|i⟩</button>
+                            <button class="preset-btn rounded-lg py-2 px-1 text-center font-mono text-sm bg-white/3" data-theta="1.5708" data-phi="4.71239">|-i⟩</button>
+                        </div>
+                    </div>
+
+                    <!-- Botões de medição -->
+                    <div class="glass p-5 space-y-3">
+                        <button class="measure-btn w-full py-3.5 rounded-xl font-semibold text-sm tracking-wide text-white" id="btn-measure" aria-label="Realizar uma medição">
+                            <i class="fa-solid fa-bolt mr-2"></i>Medir
+                        </button>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button class="py-2.5 rounded-xl text-sm font-medium bg-white/5 hover:bg-white/10 transition border border-white/5" id="btn-measure-100" aria-label="Realizar 100 medições">
+                                <i class="fa-solid fa-layer-group mr-1 text-q-muted"></i> 100x
+                            </button>
+                            <button class="py-2.5 rounded-xl text-sm font-medium bg-white/5 hover:bg-white/10 transition border border-white/5" id="btn-measure-1000" aria-label="Realizar 1000 medições">
+                                <i class="fa-solid fa-layer-group mr-1 text-q-muted"></i> 1000x
+                            </button>
+                        </div>
+                        <button class="w-full py-2 rounded-xl text-xs text-q-muted hover:text-q-fg transition" id="btn-reset" aria-label="Resetar medições">
+                            <i class="fa-solid fa-rotate-left mr-1"></i> Resetar estatísticas
+                        </button>
+                    </div>
+
+                    <!-- Explicação contextual -->
+                    <div class="glass p-5 border-l-2 border-l-q-cyan/50" id="explanation-card">
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-lightbulb text-q-gold mt-0.5"></i>
+                            <p class="text-sm leading-relaxed explanation-text" id="explanation-text">
+                                Arraste a esfera para rotacionar. Use os controles de θ e φ para preparar o estado do qubit. Observe como o vetor muda de posição na esfera.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Script principal -->
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // ===================== ESTADO DO SIMULADOR =====================
+        const state = {
+            theta: 0.785,        // ângulo polar atual
+            phi: 0,              // ângulo azimutal atual
+            targetTheta: 0.785,
+            targetPhi: 0,
+            isMeasuring: false,
+            measureStart: 0,
+            measureResult: null, // 0 ou 1
+            isCollapsed: false,
+            results: { 0: 0, 1: 0 },
+            total: 0,
+            streamData: [],      // últimos resultados para as bolinhas
+        };
+
+        // ===================== ELEMENTOS DOM =====================
+        const container = document.getElementById('bloch-container');
+        const thetaSlider = document.getElementById('theta-slider');
+        const phiSlider = document.getElementById('phi-slider');
+        const thetaVal = document.getElementById('theta-val');
+        const phiVal = document.getElementById('phi-val');
+        const ketDisplay = document.getElementById('ket-display');
+        const alphaDisplay = document.getElementById('alpha-display');
+        const betaDisplay = document.getElementById('beta-display');
+        const prob0El = document.getElementById('prob-0');
+        const prob1El = document.getElementById('prob-1');
+        const bar0 = document.getElementById('bar-0');
+        const bar1 = document.getElementById('bar-1');
+        const bar0Text = document.getElementById('bar-0-text');
+        const bar1Text = document.getElementById('bar-1-text');
+        const totalCount = document.getElementById('total-count');
+        const streamEl = document.getElementById('measure-stream');
+        const streamPlaceholder = document.getElementById('stream-placeholder');
+        const explanationText = document.getElementById('explanation-text');
+        const explanationCard = document.getElementById('explanation-card');
+        const collapsedBadge = document.getElementById('collapsed-badge');
+        const collapseFlash = document.getElementById('collapse-flash');
+
+        // ===================== THREE.JS SETUP =====================
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 100);
+        camera.position.set(2.8, 2.2, 2.8);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setClearColor(0x000000, 0);
+        container.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.08;
+        controls.enablePan = false;
+        controls.minDistance = 3;
+        controls.maxDistance = 8;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.4;
+
+        const SPHERE_RADIUS = 1.5;
+        const blochGroup = new THREE.Group();
+        scene.add(blochGroup);
+
+        // ===================== ILUMINAÇÃO =====================
+        scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        dirLight.position.set(3, 5, 3);
+        scene.add(dirLight);
+
+        // ===================== ESFERA WIREFRAME =====================
+        const sphereGeo = new THREE.SphereGeometry(SPHERE_RADIUS, 32, 24);
+        const sphereWire = new THREE.WireframeGeometry(sphereGeo);
+        const sphereLine = new THREE.LineSegments(sphereWire, new THREE.LineBasicMaterial({
+            color: 0xffffff, transparent: true, opacity: 0.06
+        }));
+        blochGroup.add(sphereLine);
+
+        // Esfera sólida muito transparente
+        const sphereSolid = new THREE.Mesh(sphereGeo, new THREE.MeshBasicMaterial({
+            color: 0x1a1a3e, transparent: true, opacity: 0.08, side: THREE.DoubleSide
+        }));
+        blochGroup.add(sphereSolid);
+
+        // ===================== CÍRCULOS DE REFERÊNCIA =====================
+        function createCircle(radius, color, opacity, segments = 64) {
+            const pts = [];
+            for (let i = 0; i <= segments; i++) {
+                const a = (i / segments) * Math.PI * 2;
+                pts.push(new THREE.Vector3(Math.cos(a) * radius, 0, Math.sin(a) * radius));
+            }
+            const geo = new THREE.BufferGeometry().setFromPoints(pts);
+            const mat = new THREE.LineBasicMaterial({ color, transparent: true, opacity });
+            return new THREE.Line(geo, mat);
+        }
+
+        // Equador (plano XY da Bloch = plano XZ do Three.js)
+        blochGroup.add(createCircle(SPHERE_RADIUS, 0x00e5ff, 0.15));
+
+        // Meridiano XZ da Bloch = plano XY do Three.js
+        const meridPts = [];
+        for (let i = 0; i <= 64; i++) {
+            const a = (i / 64) * Math.PI * 2;
+            meridPts.push(new THREE.Vector3(Math.cos(a) * SPHERE_RADIUS, Math.sin(a) * SPHERE_RADIUS, 0));
+        }
+        blochGroup.add(new THREE.Line(
+            new THREE.BufferGeometry().setFromPoints(meridPts),
+            new THREE.LineBasicMaterial({ color: 0xff0080, transparent: true, opacity: 0.1 })
+        ));
+
+        // ===================== EIXOS =====================
+        function createAxis(dir, color, label, labelOffset) {
+            const len = SPHERE_RADIUS * 1.25;
+            // Linha do eixo
+            const pts = [new THREE.Vector3(0,0,0), dir.clone().multiplyScalar(len)];
+            const ptsN = [new THREE.Vector3(0,0,0), dir.clone().multiplyScalar(-len)];
+            blochGroup.add(new THREE.Line(
+                new THREE.BufferGeometry().setFromPoints(pts),
+                new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.3 })
+            ));
+            blochGroup.add(new THREE.Line(
+                new THREE.BufferGeometry().setFromPoints(ptsN),
+                new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.12 })
+            ));
+
+            // Cone na ponta positiva
+            const coneGeo = new THREE.ConeGeometry(0.04, 0.12, 8);
+            const coneMat = new THREE.MeshBasicMaterial({ color });
+            const cone = new THREE.Mesh(coneGeo, coneMat);
+            const endPos = dir.clone().multiplyScalar(SPHERE_RADIUS);
+            cone.position.copy(endPos);
+            // Apontar o cone na direção certa
+            const up = new THREE.Vector3(0, 1, 0);
+            const quat = new THREE.Quaternion().setFromUnitVectors(up, dir.clone().normalize());
+            cone.setRotationFromQuaternion(quat);
+            blochGroup.add(cone);
+
+            // Label como sprite
+            const sprite = makeTextSprite(label, color);
+            sprite.position.copy(dir.clone().multiplyScalar(SPHERE_RADIUS + (labelOffset || 0.28)));
+            blochGroup.add(sprite);
+        }
+
+        // Mapeamento: Bloch(X,Y,Z) -> Three.js(X, Z, Y)
+        // Z da Bloch = Y do Three.js (vertical)
+        createAxis(new THREE.Vector3(0, 1, 0), 0xffffff, '|0⟩', 0.3);
+        createAxis(new THREE.Vector3(0, -1, 0), 0xffffff, '|1⟩', 0.3);
+        createAxis(new THREE.Vector3(1, 0, 0), 0x00ff88, '|+⟩', 0.25);
+        createAxis(new THREE.Vector3(-1, 0, 0), 0x00ff88, '|-⟩', 0.25);
+        createAxis(new THREE.Vector3(0, 0, 1), 0xffc400, '|i⟩', 0.25);
+        createAxis(new THREE.Vector3(0, 0, -1), 0xffc400, '|-i⟩', 0.25);
+
+        // ===================== SPRITE DE TEXTO =====================
+        function makeTextSprite(text, color, size = 48) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 128; canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            ctx.font = `600 ${size}px "JetBrains Mono", monospace`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = color;
+            ctx.fillText(text, 64, 32);
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.minFilter = THREE.LinearFilter;
+            const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+            const sprite = new THREE.Sprite(mat);
+            sprite.scale.set(0.7, 0.35, 1);
+            return sprite;
+        }
+
+        // ===================== VETOR DE ESTADO =====================
+        // Grupo para o vetor: corpo (cilindro) + ponta (cone) + glow (sprite)
+        const vectorGroup = new THREE.Group();
+        blochGroup.add(vectorGroup);
+
+        // Corpo do vetor - cilindro fino
+        const vecBodyGeo = new THREE.CylinderGeometry(0.018, 0.018, SPHERE_RADIUS, 8);
+        const vecBodyMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const vecBody = new THREE.Mesh(vecBodyGeo, vecBodyMat);
+        vecBody.position.y = SPHERE_RADIUS / 2;
+        vectorGroup.add(vecBody);
+
+        // Ponta do vetor - cone
+        const vecTipGeo = new THREE.ConeGeometry(0.05, 0.15, 12);
+        const vecTipMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const vecTip = new THREE.Mesh(vecTipGeo, vecTipMat);
+        vecTip.position.y = SPHERE_RADIUS;
+        vectorGroup.add(vecTip);
+
+        // Glow sprite na ponta
+        const glowCanvas = document.createElement('canvas');
+        glowCanvas.width = 64; glowCanvas.height = 64;
+        const glowCtx = glowCanvas.getContext('2d');
+        const glowGrad = glowCtx.createRadialGradient(32, 32, 0, 32, 32, 32);
+        glowGrad.addColorStop(0, 'rgba(255,255,255,0.8)');
+        glowGrad.addColorStop(0.3, 'rgba(0,229,255,0.4)');
+        glowGrad.addColorStop(1, 'rgba(0,0,0,0)');
+        glowCtx.fillStyle = glowGrad;
+        glowCtx.fillRect(0, 0, 64, 64);
+        const glowTex = new THREE.CanvasTexture(glowCanvas);
+        const glowSprite = new THREE.Sprite(new THREE.SpriteMaterial({
+            map: glowTex, transparent: true, blending: THREE.AdditiveBlending, depthTest: false
+        }));
+        glowSprite.scale.set(0.5, 0.5, 1);
+        glowSprite.position.y = SPHERE_RADIUS;
+        vectorGroup.add(glowSprite);
+
+        // Ponto na origem
+        const originDot = new THREE.Mesh(
+            new THREE.SphereGeometry(0.03, 12, 12),
+            new THREE.MeshBasicMaterial({ color: 0xffffff })
+        );
+        blochGroup.add(originDot);
+
+        // ===================== PROJEÇÃO NO PLANO EQUATORIAL =====================
+        const projLineMat = new THREE.LineDashedMaterial({
+            color: 0xffffff, transparent: true, opacity: 0.25,
+            dashSize: 0.08, gapSize: 0.06
+        });
+        const projLineGeo = new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0)
+        ]);
+        const projLine = new THREE.Line(projLineGeo, projLineMat);
+        projLine.computeLineDistances();
+        blochGroup.add(projLine);
+
+        // Ponto de projeção
+        const projDot = new THREE.Mesh(
+            new THREE.SphereGeometry(0.025, 8, 8),
+            new THREE.MeshBasicMaterial({ color: 0xffc400, transparent: true, opacity: 0.6 })
+        );
+        blochGroup.add(projDot);
+
+        // ===================== PARTÍCULAS ORBITAIS =====================
+        const particleCount = 80;
+        const particleGeo = new THREE.BufferGeometry();
+        const particlePositions = new Float32Array(particleCount * 3);
+        const particleSpeeds = [];
+        for (let i = 0; i < particleCount; i++) {
+            const r = SPHERE_RADIUS * (0.9 + Math.random() * 0.3);
+            const theta = Math.random() * Math.PI;
+            const phi = Math.random() * Math.PI * 2;
+            particlePositions[i*3] = r * Math.sin(theta) * Math.cos(phi);
+            particlePositions[i*3+1] = r * Math.cos(theta);
+            particlePositions[i*3+2] = r * Math.sin(theta) * Math.sin(phi);
+            particleSpeeds.push(0.001 + Math.random() * 0.003);
+        }
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+        const particleMat = new THREE.PointsMaterial({
+            color: 0x00e5ff, size: 0.02, transparent: true, opacity: 0.4,
+            blending: THREE.AdditiveBlending, depthTest: false
+        });
+        const particles = new THREE.Points(particleGeo, particleMat);
+        blochGroup.add(particles);
+
+        // ===================== FUNÇÕES DE CÁLCULO =====================
+        function getBlochCoords(theta, phi) {
+            const x = Math.sin(theta) * Math.cos(phi);
+            const y = Math.sin(theta) * Math.sin(phi);
+            const z = Math.cos(theta);
+            // Mapear para Three.js: Bloch(X,Y,Z) -> Three.js(X, Z, Y)
+            return { x: x, y: z, z: y };
+        }
+
+        function getAlpha(theta) { return Math.cos(theta / 2); }
+        function getBeta(theta, phi) {
+            return { re: Math.cos(phi) * Math.sin(theta / 2), im: Math.sin(phi) * Math.sin(theta / 2) };
+        }
+
+        function formatComplex(re, im) {
+            const r = Math.abs(re), i = Math.abs(im);
+            const rs = r < 0.001 ? '' : r.toFixed(3);
+            const is = i < 0.001 ? '' : (i === 1 ? '' : i.toFixed(3)) + 'i';
+            if (!rs && !is) return '0';
+            if (!rs) return (im < 0 ? '-' : '') + is;
+            if (!is) return rs;
+            return rs + (im >= 0 ? ' + ' : ' - ') + is;
+        }
+
+        // ===================== ATUALIZAÇÃO VISUAL =====================
+        function updateVector(jitter = { x: 0, y: 0, z: 0 }) {
+            const { x, y, z } = getBlochCoords(state.theta, state.phi);
+            const dir = new THREE.Vector3(x + jitter.x, y + jitter.y, z + jitter.z).normalize();
+            const length = SPHERE_RADIUS;
+
+            // Orientar o grupo do vetor
+            const up = new THREE.Vector3(0, 1, 0);
+            const quat = new THREE.Quaternion().setFromUnitVectors(up, dir);
+            vectorGroup.setRotationFromQuaternion(quat);
+
+            // Cor do vetor baseada na probabilidade
+            const p0 = Math.cos(state.theta / 2) ** 2;
+            const color = new THREE.Color().lerpColors(
+                new THREE.Color(0xff0080), new THREE.Color(0x00e5ff), p0
+            );
+            vecBodyMat.color.copy(color);
+            vecTipMat.color.copy(color);
+
+            // Atualizar glow
+            const gc = glowCtx;
+            gc.clearRect(0, 0, 64, 64);
+            const g = gc.createRadialGradient(32, 32, 0, 32, 32, 32);
+            const cs = `rgba(${Math.round(color.r*255)},${Math.round(color.g*255)},${Math.round(color.b*255)},0.8)`;
+            g.addColorStop(0, cs);
+            g.addColorStop(0.4, `rgba(${Math.round(color.r*255)},${Math.round(color.g*255)},${Math.round(color.b*255)},0.3)`);
+            g.addColorStop(1, 'rgba(0,0,0,0)');
+            gc.fillStyle = g;
+            gc.fillRect(0, 0, 64, 64);
+            glowTex.needsUpdate = true;
+
+            // Projeção no plano equatorial (y=0)
+            const projPositions = new Float32Array([
+                x * SPHERE_RADIUS, y * SPHERE_RADIUS, z * SPHERE_RADIUS,
+                x * SPHERE_RADIUS, 0, z * SPHERE_RADIUS
+            ]);
+            projLineGeo.setAttribute('position', new THREE.BufferAttribute(projPositions, 3));
+            projLine.computeLineDistances();
+            projDot.position.set(x * SPHERE_RADIUS, 0, z * SPHERE_RADIUS);
+        }
+
+        function updateUI() {
+            const alpha = getAlpha(state.theta);
+            const beta = getBeta(state.theta, state.phi);
+            const p0 = alpha ** 2;
+            const p1 = 1 - p0;
+
+            // Ket display
+            const betaStr = formatComplex(beta.re, beta.im);
+            ketDisplay.innerHTML = `|ψ⟩ = <span class="text-q-cyan">${alpha.toFixed(3)}</span>|0⟩ + <span class="text-q-magenta">${betaStr}</span>|1⟩`;
+
+            // Alpha e Beta
+            alphaDisplay.textContent = alpha.toFixed(3);
+            betaDisplay.textContent = formatComplex(beta.re, beta.im);
+
+            // Probabilidades
+            prob0El.textContent = (p0 * 100).toFixed(1) + '%';
+            prob1El.textContent = (p1 * 100).toFixed(1) + '%';
+
+            // Barras do histograma
+            if (state.total > 0) {
+                const f0 = state.results[0] / state.total;
+                const f1 = state.results[1] / state.total;
+                bar0.style.width = (f0 * 100) + '%';
+                bar1.style.width = (f1 * 100) + '%';
+                bar0Text.textContent = (f0 * 100).toFixed(1) + '% (' + state.results[0] + ')';
+                bar1Text.textContent = (f1 * 100).toFixed(1) + '% (' + state.results[1] + ')';
+            } else {
+                bar0.style.width = (p0 * 100) + '%';
+                bar1.style.width = (p1 * 100) + '%';
+                bar0Text.textContent = (p0 * 100).toFixed(1) + '% (teórico)';
+                bar1Text.textContent = (p1 * 100).toFixed(1) + '% (teórico)';
+            }
+
+            // Total
+            totalCount.textContent = state.total + ' mediç' + (state.total === 1 ? 'ão' : 'ões');
+
+            // Sliders
+            thetaVal.textContent = state.theta.toFixed(3) + ' rad';
+            phiVal.textContent = state.phi.toFixed(3) + ' rad';
+
+            // Colapso badge
+            if (state.isCollapsed) {
+                collapsedBadge.classList.remove('hidden');
+            } else {
+                collapsedBadge.classList.add('hidden');
+            }
+
+            // Explicação contextual
+            updateExplanation(p0, p1, beta);
+        }
+
+        function updateExplanation(p0, p1, beta) {
+            let text = '';
+            const isPure0 = state.theta < 0.05;
+            const isPure1 = state.theta > 3.09;
+            const isMaxSuper = Math.abs(state.theta - Math.PI/2) < 0.05;
+
+            if (state.isMeasuring) {
+                text = 'O qubit está sendo medido! Observe o vetor "tremendo" — isso representa a incerteza quântica no momento da medição. Em seguida, ele colapsará para um estado definido.';
+            } else if (state.isCollapsed) {
+                const r = state.measureResult;
+                text = `A medição colapsou o estado para |${r}⟩! A sobreposição foi destruída. Se você medir novamente agora, obterá sempre |${r}⟩. Mude os controles para preparar um novo estado de sobreposição.`;
+            } else if (isPure0) {
+                text = 'O qubit está no estado puro |0⟩ — não há sobreposição. A probabilidade de medir |0⟩ é 100%. Este é um estado clássico, análogo a um bit convencional com valor 0.';
+            } else if (isPure1) {
+                text = 'O qubit está no estado puro |1⟩ — não há sobreposição. A probabilidade de medir |1⟩ é 100%. Este é um estado clássico, análogo a um bit convencional com valor 1.';
+            } else if (isMaxSuper) {
+                const hasImaginary = Math.abs(beta.im) > 0.01;
+                if (Math.abs(beta.re) > 0.01 && !hasImaginary) {
+                    text = 'Sobreposição máxima com coeficientes reais! O qubit está simultaneamente "em parte 0 e em parte 1". Ao medir, há exatamente 50% de chance para cada resultado. A fase φ determina em qual direção do equador o vetor aponta.';
+                } else if (hasImaginary) {
+                    text = 'Sobreposição máxima com fase complexa! Os coeficientes têm parte imaginária, o que significa que o vetor aponta numa direção diferente do eixo X. Na base computacional, as probabilidades ainda são 50/50, mas em outras bases de medição o resultado seria diferente. A fase é fundamental na computação quântica!';
+                } else {
+                    text = 'Sobreposição máxima! O qubit tem probabilidades iguais de ser medido como |0⟩ ou |1⟩. Este é o estado mais "quântico" possível — impossível de representar com um bit clássico.';
+                }
+            } else {
+                text = `O qubit está em sobreposição: ${(p0*100).toFixed(1)}% de chance de |0⟩ e ${(p1*100).toFixed(1)}% de chance de |1⟩. Quanto mais perto do polo superior, maior a probabilidade de |0⟩. Quanto mais perto do equador, mais equilibrada fica a sobreposição. Experimente medir várias vezes!`;
+            }
+
+            if (explanationText.textContent !== text) {
+                explanationText.style.opacity = '0';
+                setTimeout(() => {
+                    explanationText.textContent = text;
+                    explanationText.style.opacity = '1';
+                }, 150);
+            }
+        }
+
+        // ===================== LÓGICA DE MEDIÇÃO =====================
+        function performMeasurement(animate = true) {
+            if (state.isMeasuring) return;
+
+            // Se já colapsou, medições repetidas dão o mesmo resultado
+            if (state.isCollapsed) {
+                const r = state.measureResult;
+                state.results[r]++;
+                state.total++;
+                addStreamDot(r);
+                updateUI();
+                return;
+            }
+
+            // Determinar resultado
+            const p0 = Math.cos(state.theta / 2) ** 2;
+            const result = Math.random() < p0 ? 0 : 1;
+
+            if (animate) {
+                state.isMeasuring = true;
+                state.measureStart = performance.now();
+                state.measureResult = result;
+
+                // Definir alvo do colapso
+                state.targetTheta = result === 0 ? 0 : Math.PI;
+                state.targetPhi = 0;
+
+                // Flash visual
+                const flashColor = result === 0 ? 'rgba(0,229,255,0.3)' : 'rgba(255,0,128,0.3)';
+                collapseFlash.style.background = `radial-gradient(circle, ${flashColor}, transparent 70%)`;
+                collapseFlash.classList.remove('active');
+                void collapseFlash.offsetWidth; // reflow
+                collapseFlash.classList.add('active');
+
+                // Pausar auto-rotação durante medição
+                controls.autoRotate = false;
+            } else {
+                state.results[result]++;
+                state.total++;
+                addStreamDot(result);
+            }
+
+            updateUI();
+        }
+
+        function addStreamDot(result) {
+            if (streamPlaceholder) streamPlaceholder.style.display = 'none';
+            state.streamData.push(result);
+            if (state.streamData.length > 60) state.streamData.shift();
+
+            const dot = document.createElement('span');
+            dot.className = 'measure-dot';
+            dot.style.background = result === 0 ? '#00e5ff' : '#ff0080';
+            dot.style.boxShadow = result === 0 ? '0 0 6px rgba(0,229,255,0.5)' : '0 0 6px rgba(255,0,128,0.5)';
+            dot.title = '|' + result + '⟩';
+            streamEl.appendChild(dot);
+
+            // Remover excesso
+            while (streamEl.children.length > 61) {
+                streamEl.removeChild(streamEl.children[0]);
+            }
+        }
+
+        // ===================== EVENT LISTENERS =====================
+        thetaSlider.addEventListener('input', (e) => {
+            state.targetTheta = parseFloat(e.target.value);
+            if (state.isCollapsed) {
+                state.isCollapsed = false;
+                state.measureResult = null;
+            }
+            controls.autoRotate = true;
+            updateUI();
+        });
+
+        phiSlider.addEventListener('input', (e) => {
+            state.targetPhi = parseFloat(e.target.value);
+            if (state.isCollapsed) {
+                state.isCollapsed = false;
+                state.measureResult = null;
+            }
+            controls.autoRotate = true;
+            updateUI();
+        });
+
+        // Presets
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const t = parseFloat(btn.dataset.theta);
+                const p = parseFloat(btn.dataset.phi);
+                state.targetTheta = t;
+                state.targetPhi = p;
+                thetaSlider.value = t;
+                phiSlider.value = p;
+                if (state.isCollapsed) {
+                    state.isCollapsed = false;
+                    state.measureResult = null;
+                }
+                controls.autoRotate = true;
+
+                // Highlight ativo
+                document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                updateUI();
+            });
+        });
+
+        // Botão medir
+        document.getElementById('btn-measure').addEventListener('click', () => performMeasurement(true));
+
+        // Múltiplas medições
+        document.getElementById('btn-measure-100').addEventListener('click', () => {
+            for (let i = 0; i < 100; i++) performMeasurement(false);
+            updateUI();
+        });
+        document.getElementById('btn-measure-1000').addEventListener('click', () => {
+            for (let i = 0; i < 1000; i++) performMeasurement(false);
+            updateUI();
+        });
+
+        // Reset
+        document.getElementById('btn-reset').addEventListener('click', () => {
+            state.results = { 0: 0, 1: 0 };
+            state.total = 0;
+            state.streamData = [];
+            state.isCollapsed = false;
+            state.measureResult = null;
+            streamEl.innerHTML = '<span class="text-xs text-q-muted italic" id="stream-placeholder">Nenhuma medição realizada ainda...</span>';
+            updateUI();
+        });
+
+        // Resize
+        function onResize() {
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h);
+        }
+        window.addEventListener('resize', onResize);
+
+        // ===================== LOOP DE ANIMAÇÃO =====================
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const now = performance.now();
+
+            // Interpolação suave de theta e phi
+            const lerpSpeed = state.isMeasuring ? 0.06 : 0.12;
+            state.theta += (state.targetTheta - state.theta) * lerpSpeed;
+            state.phi += (state.targetPhi - state.phi) * lerpSpeed;
+
+            // Jitter durante medição
+            let jitter = { x: 0, y: 0, z: 0 };
+            if (state.isMeasuring) {
+                const elapsed = now - state.measureStart;
+                if (elapsed < 600) {
+                    const intensity = 0.35 * (1 - elapsed / 600);
+                    jitter = {
+                        x: (Math.random() - 0.5) * intensity,
+                        y: (Math.random() - 0.5) * intensity,
+                        z: (Math.random() - 0.5) * intensity
+                    };
+                } else if (elapsed > 1500) {
+                    // Medição completa
+                    state.isMeasuring = false;
+                    state.isCollapsed = true;
+                    state.results[state.measureResult]++;
+                    state.total++;
+                    addStreamDot(state.measureResult);
+                    controls.autoRotate = true;
+                    updateUI();
+                }
+            }
+
+            // Atualizar vetor 3D
+            updateVector(jitter);
+
+            // Animar partículas orbitais
+            const positions = particles.geometry.attributes.position.array;
+            for (let i = 0; i < particleCount; i++) {
+                const speed = particleSpeeds[i];
+                const x = positions[i*3];
+                const z = positions[i*3+2];
+                const angle = Math.atan2(z, x) + speed;
+                const r = Math.sqrt(x*x + z*z);
+                positions[i*3] = Math.cos(angle) * r;
+                positions[i*3+2] = Math.sin(angle) * r;
+                // Leve oscilação vertical
+                positions[i*3+1] += Math.sin(now * 0.001 + i) * 0.0003;
+            }
+            particles.geometry.attributes.position.needsUpdate = true;
+
+            // Pulsar glow
+            const pulse = 0.45 + Math.sin(now * 0.003) * 0.1;
+            glowSprite.material.opacity = pulse;
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // ===================== INICIALIZAÇÃO =====================
+        updateVector();
+        updateUI();
+        animate();
+    </script>
+</body>
+</html>

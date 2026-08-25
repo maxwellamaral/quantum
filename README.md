@@ -12,6 +12,8 @@
 
 [Notebooks](#-notebooks-disponíveis) • [Instalação](#-como-usar) • [Conceitos](#-conceitos-abordados) • [Referências](#-referências)
 
+> 🎓 **Novo: trilha guiada de autoaprendizagem do curso de extensão — [`CURSO.md`](CURSO.md)**
+
 </div>
 
 ---

@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teletransporte Quântico</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap');
+
+  :root {
+    --bg: #04050f;
+    --surface: #0b0d1f;
+    --alice: #00e5ff;
+    --bob: #ff6b6b;
+    --entangle: #b57bee;
+    --gold: #ffd166;
+    --text: #c8cfe8;
+    --dim: #5a6080;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    overflow-x: hidden;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 50% at 50% 60%, #1a0a3040 0%, transparent 70%);
+  }
+
+  .stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .star {
+    position: absolute;
+    width: 2px; height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--d, 3s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.9; }
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero h1 span.q { color: var(--entangle); }
+  .hero h1 span.t { color: var(--alice); }
+
+  .hero p {
+    max-width: 600px;
+    margin-top: 1.5rem;
+    color: var(--dim);
+    line-height: 1.8;
+    font-size: 0.88rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--dim);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  .scroll-hint::after {
+    content: '';
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--dim), transparent);
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(6px); }
+  }
+
+  /* SECTIONS */
+  section {
+    padding: 6rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.6rem, 4vw, 2.8rem);
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .section-body {
+    color: var(--dim);
+    line-height: 1.9;
+    font-size: 0.88rem;
+    max-width: 640px;
+  }
+
+  /* MISCONCEPTION CARD */
+  .myth-card {
+    background: #0f1025;
+    border: 1px solid #1e2245;
+    border-left: 3px solid var(--bob);
+    padding: 1.5rem 2rem;
+    margin-top: 2rem;
+    border-radius: 0 8px 8px 0;
+  }
+
+  .myth-card .label { color: var(--bob); font-size: 0.7rem; letter-spacing: 0.2em; margin-bottom: 0.5rem; }
+  .myth-card p { color: var(--dim); font-size: 0.85rem; line-height: 1.7; }
+
+  /* INTERACTIVE DIAGRAM */
+  .diagram-wrap {
+    background: var(--surface);
+    border: 1px solid #1a1e3a;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    margin-top: 3rem;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .diagram-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    color: var(--text);
+  }
+
+  /* STEP NAVIGATOR */
+  .steps-nav {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+  }
+
+  .step-btn {
+    padding: 0.4rem 1rem;
+    border: 1px solid #1e2245;
+    background: transparent;
+    color: var(--dim);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .step-btn:hover { border-color: var(--entangle); color: var(--entangle); }
+  .step-btn.active { background: var(--entangle); border-color: var(--entangle); color: #000; }
+
+  /* SVG SCENE */
+  .scene-svg {
+    width: 100%;
+    height: 300px;
+    display: block;
+  }
+
+  .step-desc {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #070918;
+    border-radius: 8px;
+    border: 1px solid #131730;
+    min-height: 90px;
+    transition: opacity 0.3s;
+  }
+
+  .step-desc h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+  }
+
+  .step-desc p { color: var(--dim); font-size: 0.82rem; line-height: 1.8; }
+
+  /* PARTICLES (CSS only) */
+  .particle {
+    animation: float-particle var(--dur, 4s) ease-in-out infinite;
+    animation-delay: var(--del, 0s);
+  }
+
+  @keyframes float-particle {
+    0%, 100% { transform: translateY(0px); opacity: 0.6; }
+    50% { transform: translateY(-8px); opacity: 1; }
+  }
+
+  /* ENTANGLEMENT PULSE */
+  .entangle-pulse {
+    animation: pulse-ring 2s ease-out infinite;
+  }
+
+  @keyframes pulse-ring {
+    0% { stroke-opacity: 0.8; r: 16; }
+    100% { stroke-opacity: 0; r: 35; }
+  }
+
+  /* TELEPORT FLASH */
+  .teleport-flash {
+    animation: flash 1.5s ease-in-out infinite;
+  }
+
+  @keyframes flash {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+  }
+
+  /* WAVE */
+  .wave-path {
+    animation: wave-move 3s linear infinite;
+  }
+
+  @keyframes wave-move {
+    0% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -80; }
+  }
+
+  /* ANALOGY GRID */
+  .analogy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .analogy-card {
+    background: var(--surface);
+    border: 1px solid #1a1e3a;
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .analogy-card:hover { border-color: var(--entangle); }
+
+  .analogy-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent, var(--entangle));
+  }
+
+  .analogy-icon { font-size: 2rem; margin-bottom: 1rem; }
+  .analogy-card h3 { font-family: 'Syne', sans-serif; font-size: 1rem; margin-bottom: 0.5rem; color: var(--text); }
+  .analogy-card p { color: var(--dim); font-size: 0.82rem; line-height: 1.7; }
+
+  /* FORMULA BOX */
+  .formula-box {
+    background: #060816;
+    border: 1px solid #1e2245;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-top: 2rem;
+    font-family: 'Space Mono', monospace;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .formula-box::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle at 30% 30%, #b57bee08, transparent 60%);
+  }
+
+  .formula-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid #131730;
+    font-size: 0.85rem;
+  }
+
+  .formula-row:last-child { border-bottom: none; }
+  .formula-key { color: var(--gold); min-width: 140px; font-size: 0.75rem; }
+  .formula-val { color: var(--entangle); }
+  .formula-note { color: var(--dim); font-size: 0.72rem; margin-left: auto; }
+
+  /* PROGRESS */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: var(--entangle);
+    z-index: 100;
+    transition: width 0.1s linear;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--dim);
+    font-size: 0.75rem;
+    border-top: 1px solid #0d1025;
+  }
+
+  /* GLOW */
+  .glow-alice { filter: drop-shadow(0 0 8px var(--alice)); }
+  .glow-bob { filter: drop-shadow(0 0 8px var(--bob)); }
+  .glow-entangle { filter: drop-shadow(0 0 8px var(--entangle)); }
+
+  /* QUIZ */
+  .quiz-wrap {
+    background: var(--surface);
+    border: 1px solid #1a1e3a;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-top: 3rem;
+  }
+
+  .quiz-q { font-family: 'Syne', sans-serif; font-size: 1rem; margin-bottom: 1.5rem; }
+  .quiz-options { display: flex; flex-direction: column; gap: 0.75rem; }
+
+  .quiz-btn {
+    background: #070918;
+    border: 1px solid #1e2245;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    padding: 1rem 1.5rem;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+
+  .quiz-btn:hover { border-color: var(--entangle); color: var(--entangle); }
+  .quiz-btn.correct { border-color: #4ade80; color: #4ade80; background: #4ade8010; }
+  .quiz-btn.wrong { border-color: var(--bob); color: var(--bob); background: #ff6b6b10; }
+
+  .quiz-feedback {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    display: none;
+  }
+
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.correct { background: #4ade8012; border: 1px solid #4ade8030; color: #4ade80; }
+  .quiz-feedback.wrong { background: #ff6b6b12; border: 1px solid #ff6b6b30; color: #ff9999; }
+
+  @media (max-width: 600px) {
+    section { padding: 4rem 1.25rem; }
+    .scene-svg { height: 220px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<!-- STARS BG -->
+<div class="stars" id="stars"></div>
+
+<!-- HERO -->
+<div class="hero">
+  <p class="section-label">Física Quântica Explicada</p>
+  <h1>
+    <span class="t">Tele</span><span class="q">transporte</span><br>
+    <span style="color:var(--gold)">Quântico</span>
+  </h1>
+  <p>Como o universo transfere o estado de uma partícula para outra, instantaneamente — sem que ela percorra nenhum caminho físico.</p>
+  <div class="scroll-hint">ROLE PARA EXPLORAR</div>
+</div>
+
+<!-- SECTION 1: O QUE NÃO É -->
+<section>
+  <p class="section-label">Passo 01</p>
+  <h2 class="section-title">Primeiro, o que <em style="color:var(--bob)">não</em> é teletransporte quântico</h2>
+  <p class="section-body">
+    Esqueça Star Trek. O teletransporte quântico <strong>não</strong> move matéria de um lugar para outro. Nenhuma partícula "viaja". O que é transferido é a <strong>informação do estado quântico</strong> — como uma receita que descreve exatamente como montar algo — e a partícula original é destruída no processo.
+  </p>
+  <div class="myth-card">
+    <p class="label">⚠️ Mito popular</p>
+    <p>"Teletransporte quântico permite comunicação mais rápida que a luz." — <strong>Falso.</strong> Você sempre precisa de um canal clássico (rádio, fibra óptica) para completar o processo. A física de Einstein está salva.</p>
+  </div>
+</section>
+
+<!-- SECTION 2: ENTRELAÇAMENTO -->
+<section>
+  <p class="section-label">Passo 02</p>
+  <h2 class="section-title">O ingrediente secreto: <span style="color:var(--entangle)">Entrelaçamento</span></h2>
+  <p class="section-body">
+    Dois qubits entrelaçados formam um único sistema. Medir um deles instantaneamente define o estado do outro — não importa a distância. Einstein chamou isso de "ação fantasmagórica à distância", mas hoje é um fato experimental robusto.
+  </p>
+
+  <div class="analogy-grid">
+    <div class="analogy-card" style="--accent: var(--entangle)">
+      <div class="analogy-icon">🎲</div>
+      <h3>Dados Mágicos</h3>
+      <p>Imagine dois dados que sempre mostram valores opostos quando jogados, não importa onde estejam. Isso é entrelaçamento — correlação sem comunicação prévia.</p>
+    </div>
+    <div class="analogy-card" style="--accent: var(--gold)">
+      <div class="analogy-icon">🧤</div>
+      <h3>Luvas Separadas</h3>
+      <p>Se você abre uma caixa e vê a luva direita, sabe imediatamente que a outra é a esquerda. A diferença: em quântica, a luva <em>não tinha lado definido</em> antes de você olhar.</p>
+    </div>
+    <div class="analogy-card" style="--accent: var(--alice)">
+      <div class="analogy-icon">📡</div>
+      <h3>Conexão Real</h3>
+      <p>Não é apenas correlação clássica. Testes de Bell provam que partículas entrelaçadas violam as desigualdades de Bell — logo, há algo genuinamente não-local acontecendo.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3: DIAGRAMA INTERATIVO -->
+<section style="max-width: 1100px;">
+  <p class="section-label">Passo 03</p>
+  <h2 class="section-title">Como funciona: o <span style="color:var(--alice)">protocolo</span> passo a passo</h2>
+  <p class="section-body">Explore cada etapa do processo clicando nos botões abaixo.</p>
+
+  <div class="diagram-wrap">
+    <div class="diagram-title">Protocolo de Bennett et al. (1993)</div>
+
+    <div class="steps-nav">
+      <button class="step-btn active" onclick="setStep(0)">0. Início</button>
+      <button class="step-btn" onclick="setStep(1)">1. Entrelaçar</button>
+      <button class="step-btn" onclick="setStep(2)">2. Medir (Alice)</button>
+      <button class="step-btn" onclick="setStep(3)">3. Canal Clássico</button>
+      <button class="step-btn" onclick="setStep(4)">4. Corrigir (Bob)</button>
+      <button class="step-btn" onclick="setStep(5)">5. Completo!</button>
+    </div>
+
+    <svg class="scene-svg" viewBox="0 0 800 280" id="scene">
+      <defs>
+        <radialGradient id="gAlice" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.4"/>
+          <stop offset="100%" stop-color="#00e5ff" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="gBob" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#ff6b6b" stop-opacity="0.4"/>
+          <stop offset="100%" stop-color="#ff6b6b" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="gEnt" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#b57bee" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="#b57bee" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="blur-sm">
+          <feGaussianBlur stdDeviation="2"/>
+        </filter>
+      </defs>
+
+      <!-- Background blobs -->
+      <ellipse cx="180" cy="140" rx="100" ry="80" fill="url(#gAlice)" filter="url(#blur-sm)"/>
+      <ellipse cx="620" cy="140" rx="100" ry="80" fill="url(#gBob)" filter="url(#blur-sm)"/>
+
+      <!-- Labels -->
+      <text x="180" y="240" text-anchor="middle" fill="#00e5ff" font-family="Syne,sans-serif" font-size="14" opacity="0.9">Alice</text>
+      <text x="620" y="240" text-anchor="middle" fill="#ff6b6b" font-family="Syne,sans-serif" font-size="14" opacity="0.9">Bob</text>
+      <text x="400" y="30" text-anchor="middle" fill="#b57bee" font-family="Syne,sans-serif" font-size="12" opacity="0.7">Fonte de Entrelaçamento</text>
+
+      <!-- Source -->
+      <rect x="365" y="40" width="70" height="40" rx="6" fill="#1a0a30" stroke="#b57bee" stroke-width="1.5"/>
+      <text x="400" y="65" text-anchor="middle" fill="#b57bee" font-size="11" font-family="Space Mono,monospace">EPR</text>
+
+      <!-- Lines from source -->
+      <line id="line-l" x1="365" y1="60" x2="210" y2="140" stroke="#b57bee" stroke-width="1" stroke-dasharray="4 3" opacity="0.3"/>
+      <line id="line-r" x1="435" y1="60" x2="590" y2="140" stroke="#b57bee" stroke-width="1" stroke-dasharray="4 3" opacity="0.3"/>
+
+      <!-- Alice qubits -->
+      <!-- ψ (to teleport) -->
+      <g id="qubit-psi" transform="translate(100,140)">
+        <circle r="22" fill="#04050f" stroke="#00e5ff" stroke-width="2"/>
+        <text y="5" text-anchor="middle" fill="#00e5ff" font-size="14" font-family="Space Mono,monospace">ψ</text>
+      </g>
+      <!-- Alice's entangled qubit A -->
+      <g id="qubit-a" transform="translate(200,140)">
+        <circle r="18" fill="#04050f" stroke="#b57bee" stroke-width="1.5"/>
+        <text y="5" text-anchor="middle" fill="#b57bee" font-size="12" font-family="Space Mono,monospace">A</text>
+      </g>
+
+      <!-- Bob's entangled qubit B -->
+      <g id="qubit-b" transform="translate(600,140)">
+        <circle r="18" fill="#04050f" stroke="#b57bee" stroke-width="1.5"/>
+        <text y="5" text-anchor="middle" fill="#b57bee" font-size="12" font-family="Space Mono,monospace">B</text>
+      </g>
+
+      <!-- Entanglement arc (hidden initially) -->
+      <path id="entangle-arc" d="M218,140 Q400,30 582,140" fill="none" stroke="#b57bee" stroke-width="2" stroke-dasharray="6 4" opacity="0"/>
+
+      <!-- Bell measurement indicator -->
+      <g id="bell-indicator" opacity="0" transform="translate(150,140)">
+        <rect x="-55" y="-35" width="110" height="30" rx="4" fill="#00e5ff18" stroke="#00e5ff" stroke-width="1"/>
+        <text x="0" y="-15" text-anchor="middle" fill="#00e5ff" font-size="9" font-family="Space Mono,monospace">MEDIÇÃO BELL</text>
+      </g>
+
+      <!-- Classical channel arrow -->
+      <g id="classical-arrow" opacity="0">
+        <line x1="250" y1="200" x2="550" y2="200" stroke="#ffd166" stroke-width="2"/>
+        <polygon points="550,195 565,200 550,205" fill="#ffd166"/>
+        <text x="400" y="220" text-anchor="middle" fill="#ffd166" font-size="10" font-family="Space Mono,monospace">Canal Clássico (bits: 2)</text>
+      </g>
+
+      <!-- Correction gate at Bob -->
+      <g id="correction-gate" opacity="0" transform="translate(600,185)">
+        <rect x="-35" y="-15" width="70" height="30" rx="4" fill="#ff6b6b18" stroke="#ff6b6b" stroke-width="1"/>
+        <text x="0" y="5" text-anchor="middle" fill="#ff6b6b" font-size="9" font-family="Space Mono,monospace">CORREÇÃO</text>
+      </g>
+
+      <!-- Success glow (step 5) -->
+      <g id="success-glow" opacity="0">
+        <circle cx="600" cy="140" r="40" fill="none" stroke="#4ade80" stroke-width="2" stroke-dasharray="4 3"/>
+        <text x="600" y="175" text-anchor="middle" fill="#4ade80" font-size="10" font-family="Syne,sans-serif">✓ Estado recebido</text>
+      </g>
+
+      <!-- Destroyed indicator (step 5) -->
+      <g id="destroyed" opacity="0" transform="translate(100,140)">
+        <line x1="-22" y1="-22" x2="22" y2="22" stroke="#ff6b6b" stroke-width="2.5"/>
+        <line x1="22" y1="-22" x2="-22" y2="22" stroke="#ff6b6b" stroke-width="2.5"/>
+      </g>
+
+      <!-- Entangle pulse rings -->
+      <circle id="pulse1" cx="200" cy="140" r="18" fill="none" stroke="#b57bee" stroke-width="1.5" opacity="0" class="entangle-pulse"/>
+      <circle id="pulse2" cx="600" cy="140" r="18" fill="none" stroke="#b57bee" stroke-width="1.5" opacity="0" class="entangle-pulse" style="animation-delay: 0.5s"/>
+    </svg>
+
+    <div class="step-desc" id="step-desc">
+      <h3 id="desc-title">Estado inicial</h3>
+      <p id="desc-body">Alice tem um qubit com estado desconhecido <strong>|ψ⟩</strong> que ela quer teleportar para Bob. Alice e Bob também compartilham um par EPR: dois qubits entrelaçados (A e B), criados por uma fonte de entrelaçamento.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4: EQUAÇÕES SIMPLIFICADAS -->
+<section>
+  <p class="section-label">Passo 04</p>
+  <h2 class="section-title">A <span style="color:var(--gold)">matemática</span> simplificada</h2>
+  <p class="section-body">Sem entrar em álgebra linear pesada — os conceitos-chave do formalismo:</p>
+
+  <div class="formula-box">
+    <div class="formula-row">
+      <span class="formula-key">Estado a teleportar</span>
+      <span class="formula-val">|ψ⟩ = α|0⟩ + β|1⟩</span>
+      <span class="formula-note">superposição quântica</span>
+    </div>
+    <div class="formula-row">
+      <span class="formula-key">Par EPR (entrelaçado)</span>
+      <span class="formula-val">|Φ⁺⟩ = (|00⟩ + |11⟩) / √2</span>
+      <span class="formula-note">estado de Bell</span>
+    </div>
+    <div class="formula-row">
+      <span class="formula-key">Medição de Alice</span>
+      <span class="formula-val">Base de Bell → 2 bits clássicos</span>
+      <span class="formula-note">colapso do estado</span>
+    </div>
+    <div class="formula-row">
+      <span class="formula-key">Correção de Bob</span>
+      <span class="formula-val">X, Z, XZ ou I (identidade)</span>
+      <span class="formula-note">4 casos possíveis</span>
+    </div>
+    <div class="formula-row">
+      <span class="formula-key">Resultado final</span>
+      <span class="formula-val">Bob tem |ψ⟩ exato</span>
+      <span class="formula-note">α e β preservados</span>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5: QUIZ -->
+<section>
+  <p class="section-label">Teste seu entendimento</p>
+  <h2 class="section-title">Quiz <span style="color:var(--entangle)">Rápido</span></h2>
+
+  <div class="quiz-wrap">
+    <p class="quiz-q">Por que o teletransporte quântico não viola a relatividade de Einstein?</p>
+    <div class="quiz-options">
+      <button class="quiz-btn" onclick="answer(this, false)">A) Porque a partícula se move abaixo da velocidade da luz</button>
+      <button class="quiz-btn" onclick="answer(this, true)">B) Porque informação útil só chega após o envio de bits clássicos</button>
+      <button class="quiz-btn" onclick="answer(this, false)">C) Porque o entrelaçamento não transmite nada instantaneamente</button>
+      <button class="quiz-btn" onclick="answer(this, false)">D) Porque só funciona em laboratório, não na prática</button>
+    </div>
+    <div class="quiz-feedback" id="quiz-fb"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>Baseado no protocolo de Bennett, Brassard, Crépeau et al. (1993)</p>
+  <p style="margin-top:0.5rem">Teletransporte quântico foi demonstrado experimentalmente com fótons, átomos e íons aprisionados.</p>
+</footer>
+
+<script>
+  // Stars
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.setProperty('--d', (2 + Math.random() * 4) + 's');
+    s.style.setProperty('--delay', (Math.random() * 4) + 's');
+    s.style.opacity = Math.random() * 0.5;
+    starsEl.appendChild(s);
+  }
+
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+    document.getElementById('progress').style.width = pct + '%';
+  });
+
+  // Step data
+  const steps = [
+    {
+      title: "Estado inicial",
+      body: "Alice tem um qubit com estado desconhecido <strong style='color:#00e5ff'>|ψ⟩ = α|0⟩ + β|1⟩</strong> que ela quer teleportar para Bob. Alice e Bob também compartilham um par EPR: dois qubits entrelaçados (A e B), criados por uma fonte de entrelaçamento.",
+      entangle: false, bell: false, arrow: false, correction: false, success: false, destroyed: false, pulses: false
+    },
+    {
+      title: "1. Criar entrelaçamento (par EPR)",
+      body: "Uma fonte gera dois qubits entrelaçados no <strong style='color:#b57bee'>estado de Bell |Φ⁺⟩</strong>. O qubit A vai para Alice, o qubit B vai para Bob. Agora A e B estão correlacionados — eles formam um único sistema quântico não-local.",
+      entangle: true, bell: false, arrow: false, correction: false, success: false, destroyed: false, pulses: true
+    },
+    {
+      title: "2. Medição de Bell (Alice)",
+      body: "Alice realiza uma <strong style='color:#00e5ff'>medição conjunta</strong> nos qubits |ψ⟩ e A (medição na base de Bell). Isso projeta o estado de Bob (qubit B) em um dos 4 estados possíveis. O qubit |ψ⟩ original é destruído no processo — sem clonagem quântica!",
+      entangle: true, bell: true, arrow: false, correction: false, success: false, destroyed: false, pulses: false
+    },
+    {
+      title: "3. Canal clássico (bits clássicos)",
+      body: "Alice envia <strong style='color:#ffd166'>2 bits clássicos</strong> para Bob pelo canal convencional (rádio, fibra, etc.). Esses bits dizem qual dos 4 resultados ela obteve. Aqui está a limitação: essa comunicação é limitada pela velocidade da luz — não há violação da relatividade.",
+      entangle: true, bell: true, arrow: true, correction: false, success: false, destroyed: false, pulses: false
+    },
+    {
+      title: "4. Correção (Bob)",
+      body: "Com base nos 2 bits recebidos, Bob aplica uma das 4 operações unitárias no seu qubit B: <strong style='color:#ff6b6b'>I, X, Z ou XZ</strong>. Após a correção, o qubit de Bob está <em>exatamente</em> no estado |ψ⟩ original — com os mesmos α e β desconhecidos.",
+      entangle: true, bell: true, arrow: true, correction: true, success: false, destroyed: false, pulses: false
+    },
+    {
+      title: "5. Teletransporte completo! ✓",
+      body: "O estado quântico <strong style='color:#4ade80'>|ψ⟩</strong> foi transferido com fidelidade perfeita para Bob. O qubit original de Alice foi destruído (sem clonagem). Nenhuma informação viajou mais rápido que a luz. Isso foi demonstrado experimentalmente com fótons, átomos e íons aprisionados.",
+      entangle: true, bell: false, arrow: true, correction: true, success: true, destroyed: true, pulses: false
+    }
+  ];
+
+  let currentStep = 0;
+
+  function setStep(n) {
+    currentStep = n;
+    const s = steps[n];
+
+    document.querySelectorAll('.step-btn').forEach((b, i) => {
+      b.classList.toggle('active', i === n);
+    });
+
+    // Update description
+    document.getElementById('desc-title').innerHTML = s.title;
+    document.getElementById('desc-body').innerHTML = s.body;
+
+    // Update scene elements
+    const e = (id) => document.getElementById(id);
+
+    e('entangle-arc').style.opacity = s.entangle ? '0.7' : '0';
+    e('line-l').style.opacity = s.entangle ? '0.5' : '0.3';
+    e('line-r').style.opacity = s.entangle ? '0.5' : '0.3';
+    e('bell-indicator').style.opacity = s.bell ? '1' : '0';
+    e('classical-arrow').style.opacity = s.arrow ? '1' : '0';
+    e('correction-gate').style.opacity = s.correction ? '1' : '0';
+    e('success-glow').style.opacity = s.success ? '1' : '0';
+    e('destroyed').style.opacity = s.destroyed ? '1' : '0';
+    e('pulse1').style.opacity = s.pulses ? '0.8' : '0';
+    e('pulse2').style.opacity = s.pulses ? '0.8' : '0';
+
+    // Qubit psi color
+    e('qubit-psi').querySelector('circle').style.stroke = s.destroyed ? '#ff6b6b' : '#00e5ff';
+    e('qubit-psi').querySelector('circle').style.strokeWidth = s.destroyed ? '1' : '2';
+    e('qubit-psi').querySelector('circle').style.opacity = s.destroyed ? '0.3' : '1';
+
+    // Qubit B highlight on success
+    e('qubit-b').querySelector('circle').style.stroke = s.success ? '#4ade80' : '#b57bee';
+    e('qubit-b').querySelector('circle').style.strokeWidth = s.success ? '2.5' : '1.5';
+  }
+
+  // Quiz
+  let answered = false;
+  function answer(btn, correct) {
+    if (answered) return;
+    answered = true;
+    const fb = document.getElementById('quiz-fb');
+    btn.classList.add(correct ? 'correct' : 'wrong');
+    fb.classList.add('show');
+    if (correct) {
+      fb.className = 'quiz-feedback show correct';
+      fb.textContent = '✓ Correto! O entrelaçamento cria correlações instantâneas, mas para usar esse recurso para teleportar um estado, Alice precisa enviar 2 bits clássicos para Bob. Sem esses bits, Bob não sabe qual correção aplicar — portanto, nenhuma informação útil chega antes deles.';
+    } else {
+      fb.className = 'quiz-feedback show wrong';
+      fb.textContent = '✗ Não exatamente. A chave está nos 2 bits clássicos: o entrelaçamento é não-local, mas a informação que permite a Bob "reconstruir" o estado só chega via canal clássico, limitado pela velocidade da luz.';
+    }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador 3D: Emissão Unitária</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #050505;
+            font-family: -apple-system, sans-serif;
+            color: #fff;
+        }
+        #ui-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(20, 22, 35, 0.85);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            width: 320px;
+            border: 1px solid rgba(255,255,255,0.1);
+            z-index: 100;
+        }
+        #math-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(10, 12, 20, 0.9);
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            min-width: 450px;
+            max-height: 50vh;
+            overflow-y: auto;
+            border: 1px solid rgba(0, 255, 204, 0.3);
+            z-index: 100;
+        }
+        #math-container::-webkit-scrollbar { width: 6px; }
+        #math-container::-webkit-scrollbar-track { background: transparent; }
+        #math-container::-webkit-scrollbar-thumb { background: rgba(0, 255, 204, 0.5); border-radius: 3px; }
+
+        h2 { margin: 0 0 15px 0; font-size: 18px; color: #00ffcc; }
+        .math-title {
+            font-size: 11px; color: #aaa; margin-bottom: 2px; margin-top: 15px;
+            text-transform: uppercase; letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px;
+        }
+        .math-title:first-child { margin-top: 0; }
+        .math-box { font-size: 0.95em; margin: 0; }
+        .control-group { margin-bottom: 12px; display: flex; flex-direction: column; }
+        label { font-size: 12px; margin-bottom: 5px; display: flex; justify-content: space-between; color: #aaa; }
+        label span { color: #00ffcc; font-weight: bold; }
+        input[type="range"] { width: 100%; accent-color: #00ffcc; }
+        #canvas-container { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; }
+        .hint { font-size: 10px; color: #ff0055; margin-top: -3px; margin-bottom: 8px; }
+    </style>
+    
+    <!-- Three.js e OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+</head>
+<body>
+
+<div id="ui-container">
+    <h2>Laboratório Quântico 3D</h2>
+    <div class="control-group">
+        <label for="slits">Fendas (N): <span id="val-slits">2</span></label>
+        <input type="range" id="slits" min="1" max="5" value="2" step="1">
+    </div>
+    <div class="control-group">
+        <label for="spacing">Distância entre Fendas (d): <span id="val-spacing">40</span></label>
+        <input type="range" id="spacing" min="20" max="80" value="40" step="1">
+    </div>
+    <div class="control-group">
+        <label for="screenDist">Distância da Tela (D): <span id="val-screenDist">200</span></label>
+        <input type="range" id="screenDist" min="100" max="350" value="200" step="10">
+    </div>
+    <div class="control-group">
+        <label for="rate">Emissão (Fótons/seg): <span id="val-rate">1</span></label>
+        <!-- Controle alterado para suportar baixíssimas taxas -->
+        <input type="range" id="rate" min="0.1" max="60" value="1" step="0.1">
+        <div class="hint">Valores baixos permitem ver 1 fóton por vez.</div>
+    </div>
+    <div class="control-group">
+        <label for="speed">Velocidade da Onda: <span id="val-speed">1</span>x</label>
+        <input type="range" id="speed" min="0.2" max="3" value="1" step="0.2">
+    </div>
+</div>
+
+<div id="math-container">
+    <div class="math-title">Passo 1: Schrödinger (Princípio da Superposição)</div>
+    <div id="eq-step1" class="math-box"></div>
+    <div class="math-title">Passo 2: Regra de Born (Densidade de Probabilidade)</div>
+    <div id="eq-step2" class="math-box"></div>
+    <div class="math-title">Passo 3: Equação Expandida (Resultado)</div>
+    <div id="eq-base" class="math-box"></div>
+    <div class="math-title">Valores em Tempo Real (λ = 12, a = 8)</div>
+    <div id="eq-num" class="math-box" style="color: #00ffcc;"></div>
+</div>
+
+<div id="canvas-container"></div>
+
+<script>
+    // --- 1. CONFIGURAÇÃO BÁSICA DO THREE.JS ---
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x050505, 0.002);
+
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(-200, 150, 250);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    container.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.target.set(50, 0, 0);
+    controls.update();
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+    scene.add(ambientLight);
+    const pointLight = new THREE.PointLight(0x00ffcc, 1, 600);
+    pointLight.position.set(0, 150, 0);
+    scene.add(pointLight);
+
+    // --- 2. VARIÁVEIS E ESTADO DO EXPERIMENTO ---
+    const UI = {
+        slits: document.getElementById('slits'),
+        spacing: document.getElementById('spacing'),
+        screenDist: document.getElementById('screenDist'),
+        rate: document.getElementById('rate'),
+        speed: document.getElementById('speed')
+    };
+    
+    const LABELS = {
+        slits: document.getElementById('val-slits'),
+        spacing: document.getElementById('val-spacing'),
+        screenDist: document.getElementById('val-screenDist'),
+        rate: document.getElementById('val-rate'),
+        speed: document.getElementById('val-speed')
+    };
+
+    const lambda = 12; 
+    const k = (2 * Math.PI) / lambda; 
+    const barrierX = 0; 
+    const sourceX = -120; 
+    let screenX = 200;
+    const screenWidth = 400; 
+    const slitWidth = 8; 
+    
+    let time = 0;
+    // Acumulador de emissão fracionada
+    let emissionAccumulator = 0;
+
+    let slitPositionsZ = [];
+    let mathProbCurve = []; 
+    let maxProb = 0;
+
+    // --- 3. ELEMENTOS DA CENA (GEOMETRIAS) ---
+    const groupBarrier = new THREE.Group();
+    scene.add(groupBarrier);
+    const groupScreen = new THREE.Group();
+    scene.add(groupScreen);
+
+    // O Emissor 3D (Canhão)
+    const emitterGeo = new THREE.CylinderGeometry(6, 6, 25, 16);
+    emitterGeo.rotateZ(Math.PI / 2);
+    const emitterMat = new THREE.MeshLambertMaterial({ color: 0x222233 });
+    const emitterMesh = new THREE.Mesh(emitterGeo, emitterMat);
+    emitterMesh.position.set(sourceX, 0, 0);
+    scene.add(emitterMesh);
+    
+    const emitterLight = new THREE.PointLight(0xff0055, 1, 100);
+    emitterLight.position.set(sourceX + 15, 0, 0);
+    scene.add(emitterLight);
+
+    let wavePlanePost, wavePlanePre;
+    
+    const waveMaterial = new THREE.MeshBasicMaterial({ color: 0x00ffcc, wireframe: true, transparent: true, opacity: 0.25 });
+    const preWaveMaterial = new THREE.MeshBasicMaterial({ color: 0xff0055, wireframe: true, transparent: true, opacity: 0.15 });
+
+    function createWaveMesh(distance) {
+        if(wavePlanePost) scene.remove(wavePlanePost);
+        if(wavePlanePre) scene.remove(wavePlanePre);
+
+        const geoPost = new THREE.PlaneGeometry(distance, screenWidth, Math.floor(distance/2), screenWidth / 2);
+        geoPost.rotateX(-Math.PI / 2); 
+        geoPost.translate(distance / 2, 0, 0); 
+        wavePlanePost = new THREE.Mesh(geoPost, waveMaterial);
+        scene.add(wavePlanePost);
+
+        const distPre = Math.abs(sourceX);
+        const geoPre = new THREE.PlaneGeometry(distPre, screenWidth, Math.floor(distPre/2), screenWidth / 2);
+        geoPre.rotateX(-Math.PI / 2);
+        geoPre.translate(sourceX + distPre / 2, 0, 0);
+        wavePlanePre = new THREE.Mesh(geoPre, preWaveMaterial);
+        scene.add(wavePlanePre);
+    }
+
+    const screenGeom = new THREE.PlaneGeometry(100, screenWidth);
+    screenGeom.rotateY(-Math.PI / 2); 
+    const screenMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.1, side: THREE.DoubleSide });
+    const detectorPlane = new THREE.Mesh(screenGeom, screenMat);
+    groupScreen.add(detectorPlane);
+
+    let particles = [];
+    const particleGeo = new THREE.SphereGeometry(2, 8, 8); // Aumentei levemente a partícula para visualização unitária
+    const particleMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+    let histogramBins = [];
+    const numBins = 100;
+    const binWidth = screenWidth / numBins;
+    for(let i=0; i<numBins; i++) {
+        const box = new THREE.Mesh(
+            new THREE.BoxGeometry(10, 10, binWidth * 0.8),
+            new THREE.MeshBasicMaterial({ color: 0x00ffcc, transparent: true, opacity: 0.8 })
+        );
+        groupScreen.add(box);
+        histogramBins.push({ count: 0, mesh: box });
+    }
+
+    // --- 4. LÓGICA DE ATUALIZAÇÃO DA ARQUITETURA E EQUAÇÕES ---
+    function updateEquations(N, d, D) {
+        let step1 = N === 1 
+            ? `\\Psi_{\\text{total}}(z) = \\psi_1(z)` 
+            : `\\Psi_{\\text{total}}(z) = \\sum_{n=1}^{${N}} \\psi_n(z)`;
+        let step2 = `P(z) = |\\Psi_{\\text{total}}(z)|^2`;
+        let eqBase, eqNum;
+        if (N === 1) {
+            eqBase = `P(z) = \\text{sinc}^2\\left(\\frac{\\pi \\cdot a \\cdot z}{\\lambda \\cdot D}\\right)`;
+            eqNum = `P(z) = \\text{sinc}^2\\left(\\frac{\\pi \\cdot ${slitWidth} \\cdot z}{${lambda} \\cdot ${D}}\\right)`;
+        } else {
+            eqBase = `P(z) = \\underbrace{\\left( \\frac{\\sin\\left(N \\frac{\\pi \\cdot d \\cdot z}{\\lambda \\cdot D}\\right)}{N \\sin\\left(\\frac{\\pi \\cdot d \\cdot z}{\\lambda \\cdot D}\\right)} \\right)^2}_{\\text{Interferência}} \\times \\underbrace{\\text{sinc}^2\\left(\\frac{\\pi \\cdot a \\cdot z}{\\lambda \\cdot D}\\right)}_{\\text{Difração}}`;
+            eqNum = `P(z) = \\left( \\frac{\\sin\\left(${N} \\frac{\\pi \\cdot ${d} \\cdot z}{${lambda} \\cdot ${D}}\\right)}{${N} \\sin\\left(\\frac{\\pi \\cdot ${d} \\cdot z}{${lambda} \\cdot ${D}}\\right)} \\right)^2 \\times \\text{sinc}^2\\left(\\frac{\\pi \\cdot ${slitWidth} \\cdot z}{${lambda} \\cdot ${D}}\\right)`;
+        }
+        katex.render(step1, document.getElementById('eq-step1'), { displayMode: true, throwOnError: false });
+        katex.render(step2, document.getElementById('eq-step2'), { displayMode: true, throwOnError: false });
+        katex.render(eqBase, document.getElementById('eq-base'), { displayMode: true, throwOnError: false });
+        katex.render(eqNum, document.getElementById('eq-num'), { displayMode: true, throwOnError: false });
+    }
+
+    function rebuildExperiment() {
+        const numSlits = parseInt(UI.slits.value);
+        const spacing = parseFloat(UI.spacing.value);
+        screenX = parseFloat(UI.screenDist.value);
+
+        LABELS.slits.innerText = numSlits;
+        LABELS.spacing.innerText = spacing;
+        LABELS.screenDist.innerText = screenX;
+        UI.spacing.disabled = (numSlits === 1);
+        UI.spacing.parentElement.style.opacity = (numSlits === 1) ? 0.4 : 1;
+
+        updateEquations(numSlits, spacing, screenX);
+
+        slitPositionsZ = [];
+        let startZ = -((numSlits - 1) * spacing) / 2;
+        for (let i = 0; i < numSlits; i++) {
+            slitPositionsZ.push(startZ + i * spacing);
+        }
+
+        while(groupBarrier.children.length > 0) { groupBarrier.remove(groupBarrier.children[0]); }
+        const wallMat = new THREE.MeshLambertMaterial({ color: 0x333344 });
+        let lastZ = -screenWidth/2;
+        for (let i = 0; i < numSlits; i++) {
+            let gapZ = slitPositionsZ[i] - slitWidth/2;
+            let width = gapZ - lastZ;
+            if(width > 0) {
+                let segment = new THREE.Mesh(new THREE.BoxGeometry(5, 40, width), wallMat);
+                segment.position.set(0, 0, lastZ + width/2);
+                groupBarrier.add(segment);
+            }
+            lastZ = slitPositionsZ[i] + slitWidth/2;
+        }
+        if (lastZ < screenWidth/2) {
+            let width = screenWidth/2 - lastZ;
+            let segment = new THREE.Mesh(new THREE.BoxGeometry(5, 40, width), wallMat);
+            segment.position.set(0, 0, lastZ + width/2);
+            groupBarrier.add(segment);
+        }
+
+        groupScreen.position.set(screenX, 0, 0);
+        createWaveMesh(screenX);
+
+        mathProbCurve = [];
+        maxProb = 0;
+        for (let z = -screenWidth/2; z < screenWidth/2; z++) {
+            let real = 0, imag = 0;
+            for (let i = 0; i < numSlits; i++) {
+                let dist = Math.sqrt(Math.pow(screenX, 2) + Math.pow(z - slitPositionsZ[i], 2));
+                real += Math.cos(k * dist);
+                imag += Math.sin(k * dist);
+            }
+            let intensity = (real * real + imag * imag) / (numSlits * numSlits);
+            const angle = Math.atan2(z, screenX);
+            const alpha = (Math.PI * slitWidth * Math.sin(angle)) / lambda;
+            const diff = (alpha === 0) ? 1 : Math.pow(Math.sin(alpha) / alpha, 2);
+            intensity *= diff;
+            mathProbCurve.push(intensity);
+            if (intensity > maxProb) maxProb = intensity;
+        }
+
+        histogramBins.forEach((bin, idx) => {
+            bin.count = 0;
+            bin.mesh.position.set(5, 0, -screenWidth/2 + (idx + 0.5) * binWidth);
+            bin.mesh.scale.x = 0.01; 
+        });
+        particles.forEach(p => scene.remove(p.mesh));
+        particles = [];
+        emissionAccumulator = 0; // Reseta o emissor ao mudar o cenário
+    }
+
+    ['slits', 'spacing', 'screenDist'].forEach(id => {
+        UI[id].addEventListener('input', rebuildExperiment);
+    });
+    
+    // --- 5. LOOP DE ANIMAÇÃO PRINCIPAL ---
+    function animate() {
+        requestAnimationFrame(animate);
+        
+        const ratePerSecond = parseFloat(UI.rate.value);
+        const speed = parseFloat(UI.speed.value);
+        LABELS.rate.innerText = ratePerSecond.toFixed(1);
+        LABELS.speed.innerText = speed.toFixed(1);
+        time += speed * 0.15;
+
+        if (wavePlanePre) {
+            const positions = wavePlanePre.geometry.attributes.position.array;
+            for (let i = 0; i < positions.length; i += 3) {
+                let vx = positions[i];
+                let vz = positions[i + 2];
+                let dist = Math.sqrt(Math.pow(vx - sourceX, 2) + Math.pow(vz, 2));
+                let amplitude = Math.cos(k * dist - time * 3);
+                let attenuation = Math.max(0, 1 - (Math.abs(vz) / (screenWidth/1.5))); 
+                positions[i + 1] = amplitude * 12 * attenuation; 
+            }
+            wavePlanePre.geometry.attributes.position.needsUpdate = true;
+        }
+
+        if (wavePlanePost) {
+            const positions = wavePlanePost.geometry.attributes.position.array;
+            const numSlits = slitPositionsZ.length;
+            for (let i = 0; i < positions.length; i += 3) {
+                let vx = positions[i];
+                let vz = positions[i + 2];
+                let amplitude = 0;
+                for (let s = 0; s < numSlits; s++) {
+                    let dist = Math.sqrt(Math.pow(vx, 2) + Math.pow(vz - slitPositionsZ[s], 2));
+                    amplitude += Math.cos(k * dist - time * 3);
+                }
+                let attenuation = Math.max(0, 1 - (vx / screenX));
+                positions[i + 1] = (amplitude / numSlits) * 15 * attenuation; 
+            }
+            wavePlanePost.geometry.attributes.position.needsUpdate = true;
+        }
+
+        // 5.3 Lógica de Emissão Fracionada (Fótons/segundo)
+        // Assumindo 60 frames por segundo: rate/60 é o que acumula por frame.
+        emissionAccumulator += (ratePerSecond / 60);
+
+        while (emissionAccumulator >= 1) {
+            emissionAccumulator -= 1;
+
+            let targetZ, pProb;
+            let indexArray;
+            do {
+                indexArray = Math.floor(Math.random() * screenWidth);
+                targetZ = indexArray - screenWidth/2;
+                pProb = Math.random() * maxProb;
+            } while (pProb > mathProbCurve[indexArray]);
+
+            const slitZ = slitPositionsZ[Math.floor(Math.random() * slitPositionsZ.length)];
+
+            const mesh = new THREE.Mesh(particleGeo, particleMat);
+            mesh.position.set(sourceX + 15, 0, 0); 
+            scene.add(mesh);
+
+            particles.push({
+                mesh: mesh,
+                slitZ: slitZ,
+                targetZ: targetZ,
+                progress: 0,
+                stage: 1,
+                speed: 0.01 * speed + Math.random() * 0.005
+            });
+        }
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+            let p = particles[i];
+            
+            if (p.stage === 1) {
+                p.progress += p.speed * 1.5; 
+                p.mesh.position.x = THREE.MathUtils.lerp(sourceX + 15, barrierX, p.progress);
+                p.mesh.position.z = THREE.MathUtils.lerp(0, p.slitZ, p.progress);
+                
+                if (p.progress >= 1) {
+                    p.stage = 2; 
+                    p.progress = 0;
+                    p.mesh.position.x = barrierX;
+                    p.mesh.position.z = p.slitZ;
+                }
+            } else if (p.stage === 2) {
+                p.progress += p.speed;
+                p.mesh.position.x = THREE.MathUtils.lerp(barrierX, screenX, p.progress);
+                p.mesh.position.z = THREE.MathUtils.lerp(p.slitZ, p.targetZ, p.progress);
+                p.mesh.position.y = Math.sin(p.progress * Math.PI) * 10; 
+
+                if (p.progress >= 1) {
+                    scene.remove(p.mesh);
+                    let binIndex = Math.floor((p.targetZ + screenWidth/2) / binWidth);
+                    if(binIndex >= 0 && binIndex < numBins) {
+                        histogramBins[binIndex].count++;
+                        histogramBins[binIndex].mesh.scale.x = Math.max(0.01, histogramBins[binIndex].count * 0.5);
+                        histogramBins[binIndex].mesh.position.x = 5 + (histogramBins[binIndex].mesh.scale.x * 10) / 2;
+                    }
+                    particles.splice(i, 1);
+                }
+            }
+        }
+
+        controls.update();
+        renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    rebuildExperiment();
+    animate();
+</script>
+
+</body>
+</html>

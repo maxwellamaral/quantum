@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entrelaçamento Quântico</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&display=swap');
+
+:root {
+  --ink: #0a0a12;
+  --paper: #f5f0e8;
+  --vermelho: #c0392b;
+  --azul: #1a4fa0;
+  --ouro: #b8860b;
+  --cinza: #8a8070;
+  --claro: #ede8dc;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'DM Mono', monospace;
+  overflow-x: hidden;
+}
+
+/* PROGRESS */
+.progress {
+  position: fixed; top:0; left:0; height:3px;
+  background: var(--ouro); z-index:999;
+  transition: width 0.1s;
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+canvas#hero-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 2rem;
+}
+
+.hero-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.35em;
+  color: var(--ouro);
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: fade-up 1s ease 0.3s forwards;
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(3rem, 9vw, 7rem);
+  line-height: 1;
+  color: var(--paper);
+  letter-spacing: -0.02em;
+  opacity: 0;
+  animation: fade-up 1s ease 0.6s forwards;
+}
+
+.hero-title em {
+  font-style: italic;
+  color: var(--ouro);
+}
+
+.hero-sub {
+  margin-top: 2rem;
+  max-width: 480px;
+  color: #8a8270;
+  font-size: 0.8rem;
+  line-height: 1.9;
+  opacity: 0;
+  animation: fade-up 1s ease 0.9s forwards;
+}
+
+.hero-scroll {
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  color: #5a5448;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  opacity: 0;
+  animation: fade-up 1s ease 1.2s forwards;
+}
+
+.scroll-line {
+  width: 1px; height: 60px;
+  background: linear-gradient(to bottom, var(--ouro), transparent);
+  animation: stretch 2s ease-in-out infinite;
+}
+
+@keyframes stretch {
+  0%,100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.4); }
+}
+
+@keyframes fade-up {
+  from { opacity:0; transform: translateY(24px); }
+  to { opacity:1; transform: translateY(0); }
+}
+
+/* ── SECTIONS ── */
+.section {
+  padding: 8rem 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.section-num {
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  color: var(--cinza);
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  color: var(--ink);
+}
+
+.section-title em { font-style: italic; color: var(--ouro); }
+
+.section-body {
+  color: #5a5040;
+  line-height: 2;
+  font-size: 0.82rem;
+  max-width: 580px;
+}
+
+/* ── RULE ── */
+.rule {
+  border: none;
+  border-top: 1px solid #d8d0c0;
+  margin: 0;
+}
+
+/* ── DEMO BOX ── */
+.demo-box {
+  background: var(--ink);
+  border-radius: 2px;
+  padding: 2.5rem;
+  margin-top: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.demo-label {
+  position: absolute; top:1rem; left:1.5rem;
+  font-size: 0.6rem; letter-spacing: 0.3em;
+  color: #3a3830; text-transform: uppercase;
+}
+
+/* ── SUPERPOSITION DEMO ── */
+.superposition-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+  align-items: center;
+}
+
+.coin-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.coin {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: transform 0.1s;
+  position: relative;
+}
+
+.coin:hover { transform: scale(1.05); }
+
+.coin.classical {
+  background: radial-gradient(circle at 35% 35%, #4a4030, #1a1810);
+  border: 2px solid #3a3020;
+  box-shadow: 0 4px 20px #0008, inset 0 1px 0 #5a5040;
+}
+
+.coin.quantum {
+  background: radial-gradient(circle at 35% 35%, #1a3060, #080e20);
+  border: 2px solid #1a2a50;
+  box-shadow: 0 4px 20px #0008, inset 0 1px 0 #2a4070;
+  animation: quantum-shimmer 3s ease-in-out infinite;
+}
+
+@keyframes quantum-shimmer {
+  0%,100% { box-shadow: 0 4px 20px #0008, inset 0 1px 0 #2a4070, 0 0 0 0 #1a4fa030; }
+  50% { box-shadow: 0 4px 20px #0008, inset 0 1px 0 #2a4070, 0 0 0 12px #1a4fa000; }
+}
+
+.coin-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: var(--cinza);
+  text-align: center;
+}
+
+.superposition-arrow {
+  font-size: 1.5rem;
+  color: var(--ouro);
+  text-align: center;
+}
+
+/* ── ENTANGLEMENT INTERACTIVE ── */
+#entangle-demo {
+  width: 100%;
+  height: 340px;
+  display: block;
+  cursor: pointer;
+}
+
+.demo-instruction {
+  text-align: center;
+  color: #3a3830;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  margin-top: 1rem;
+}
+
+/* ── BELL INEQUALITY ── */
+.bell-section {
+  background: #f0ebe0;
+  border-left: 3px solid var(--ouro);
+  padding: 2rem 2.5rem;
+  margin-top: 2rem;
+  border-radius: 0 4px 4px 0;
+}
+
+.bell-section h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+}
+
+.bell-section p {
+  color: #5a5040;
+  font-size: 0.82rem;
+  line-height: 1.9;
+}
+
+.bell-gauge-wrap {
+  margin-top: 1.5rem;
+}
+
+.bell-gauge-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--cinza);
+  margin-bottom: 0.5rem;
+}
+
+.bell-track {
+  height: 8px;
+  background: #d8d0c0;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.bell-fill {
+  height: 100%;
+  border-radius: 4px;
+  animation: fill-gauge 2s ease 1s both;
+}
+
+.bell-fill.classical {
+  width: 75%;
+  background: var(--cinza);
+}
+
+.bell-fill.quantum {
+  width: 85%;
+  background: linear-gradient(90deg, var(--azul), var(--ouro));
+}
+
+@keyframes fill-gauge {
+  from { width: 0; }
+}
+
+.bell-limit {
+  position: absolute;
+  top: -4px;
+  height: 16px;
+  width: 2px;
+  background: var(--vermelho);
+}
+
+.limit-label {
+  position: absolute;
+  top: -22px;
+  font-size: 0.6rem;
+  color: var(--vermelho);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+/* ── ANALOGIES ── */
+.analogies {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0;
+  margin-top: 2rem;
+  border: 1px solid #d8d0c0;
+}
+
+.analogy {
+  padding: 2rem 1.75rem;
+  border-right: 1px solid #d8d0c0;
+  position: relative;
+  transition: background 0.3s;
+}
+
+.analogy:last-child { border-right: none; }
+.analogy:hover { background: #ede8dc; }
+
+.analogy-num {
+  font-size: 3rem;
+  color: #e0d8cc;
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  position: absolute;
+  top: 1rem; right: 1.5rem;
+  line-height: 1;
+}
+
+.analogy-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+
+.analogy h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+
+.analogy p { color: #6a6050; font-size: 0.78rem; line-height: 1.8; }
+
+.analogy-verdict {
+  margin-top: 1rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  padding: 0.3rem 0.6rem;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.verdict-partial { background: #fff3cd; color: #856404; }
+.verdict-no { background: #fde8e8; color: var(--vermelho); }
+.verdict-yes { background: #d4edda; color: #155724; }
+
+/* ── APPLICATIONS ── */
+.apps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.app-card {
+  border: 1px solid #d8d0c0;
+  padding: 1.75rem;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s, transform 0.3s;
+}
+
+.app-card:hover { border-color: var(--ouro); transform: translateY(-2px); }
+
+.app-card::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--stripe, var(--ouro));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s;
+}
+
+.app-card:hover::before { transform: scaleX(1); }
+
+.app-icon { font-size: 1.5rem; margin-bottom: 1rem; }
+.app-card h3 { font-family: 'Playfair Display', serif; font-size: 1rem; margin-bottom: 0.5rem; }
+.app-card p { color: #6a6050; font-size: 0.78rem; line-height: 1.8; }
+
+/* ── QUIZ ── */
+.quiz-box {
+  background: var(--ink);
+  padding: 3rem;
+  margin-top: 3rem;
+}
+
+.quiz-q {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  color: var(--paper);
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.quiz-opts { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.qbtn {
+  background: transparent;
+  border: 1px solid #2a2820;
+  color: #8a8070;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  padding: 1rem 1.25rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 2px;
+}
+
+.qbtn:hover { border-color: var(--ouro); color: var(--ouro); }
+.qbtn.correct { border-color: #4ade80; color: #4ade80; background: #4ade8008; }
+.qbtn.wrong { border-color: var(--vermelho); color: #e07060; background: #c0392b08; }
+
+.quiz-feedback {
+  margin-top: 1.5rem;
+  font-size: 0.78rem;
+  line-height: 1.9;
+  padding: 1.25rem;
+  display: none;
+}
+
+.quiz-feedback.show { display: block; }
+.quiz-feedback.c { border: 1px solid #4ade8030; color: #4ade80; background: #4ade8008; }
+.quiz-feedback.w { border: 1px solid #c0392b30; color: #e07060; background: #c0392b08; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--ink);
+  color: #3a3830;
+  text-align: center;
+  padding: 3rem 2rem;
+  font-size: 0.72rem;
+  line-height: 2;
+  border-top: 1px solid #1a1810;
+}
+
+/* ── CANVAS WAVEFORM ── */
+.wave-canvas-wrap {
+  margin-top: 3rem;
+  background: var(--ink);
+  padding: 1.5rem;
+  position: relative;
+}
+
+.wave-canvas-wrap canvas {
+  width: 100%;
+  display: block;
+}
+
+/* ── STATE EQUATION ── */
+.eq-box {
+  background: #f0ebe0;
+  padding: 1.5rem 2rem;
+  margin-top: 2rem;
+  border-radius: 2px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(0.95rem, 2.5vw, 1.3rem);
+  color: var(--ink);
+}
+
+.eq-box .eq-part { display: flex; align-items: center; gap: 0.4em; }
+.eq-box .coef { color: var(--azul); font-weight: 700; }
+.eq-box .ket { color: var(--ink); }
+.eq-box .op { color: var(--cinza); margin: 0 0.3em; }
+.eq-box .label-eq {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--cinza);
+  width: 100%;
+  text-align: center;
+  margin-bottom: -0.5rem;
+}
+
+/* ── HOVER REVEAL ── */
+.reveal-wrap {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: #d8d0c0;
+}
+
+.reveal-card {
+  background: var(--paper);
+  padding: 2rem;
+  cursor: pointer;
+  transition: background 0.3s;
+  position: relative;
+}
+
+.reveal-card:hover { background: var(--claro); }
+
+.reveal-front h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.reveal-front p { color: var(--cinza); font-size: 0.78rem; }
+
+.reveal-back {
+  display: none;
+  color: #4a4030;
+  font-size: 0.78rem;
+  line-height: 1.8;
+}
+
+.reveal-card:hover .reveal-front { display: none; }
+.reveal-card:hover .reveal-back { display: block; }
+
+.reveal-tag {
+  position: absolute; top: 1rem; right: 1rem;
+  font-size: 0.6rem; letter-spacing: 0.15em;
+  color: var(--cinza);
+}
+
+@media (max-width: 600px) {
+  .superposition-grid { grid-template-columns: 1fr; }
+  .reveal-wrap { grid-template-columns: 1fr; }
+  .analogies { grid-template-columns: 1fr; }
+  .analogy { border-right: none; border-bottom: 1px solid #d8d0c0; }
+  .analogy:last-child { border-bottom: none; }
+  .demo-box { padding: 1.5rem 1rem; }
+  .quiz-box { padding: 2rem 1.25rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress" id="prog"></div>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Mecânica Quântica · Fenômenos Fundamentais</p>
+    <h1 class="hero-title">
+      Entre&shy;<em>laça&shy;mento</em><br>Quântico
+    </h1>
+    <p class="hero-sub">Quando duas partículas formam um único sistema — e medir uma delas instantaneamente define a outra, a qualquer distância do universo.</p>
+    <div class="hero-scroll">
+      EXPLORAR
+      <div class="scroll-line"></div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- ═══ 01 SUPERPOSIÇÃO ═══ -->
+<section class="section">
+  <p class="section-num">01 — Pré-requisito</p>
+  <h2 class="section-title">Antes: o que é <em>superposição</em>?</h2>
+  <p class="section-body">Um qubit não é 0 ou 1 — ele é <strong>ambos ao mesmo tempo</strong>, numa combinação de probabilidades. Só quando medido ele "escolhe" um valor. Sem superposição, não há entrelaçamento.</p>
+
+  <div class="demo-box">
+    <span class="demo-label">Comparação: Clássico vs. Quântico</span>
+    <div style="height:1.5rem"></div>
+    <div class="superposition-grid">
+      <div class="coin-wrap">
+        <div class="coin classical">🪙</div>
+        <div class="coin-label">MOEDA CLÁSSICA<br><span style="color:#5a5040">Cara OU Coroa<br>Definida</span></div>
+      </div>
+      <div class="superposition-arrow">→</div>
+      <div class="coin-wrap">
+        <div class="coin quantum" id="q-coin" onclick="collapseCoin()">✦</div>
+        <div class="coin-label" id="q-label">QUBIT<br><span style="color:#4060a0">Cara E Coroa<br>Clique para medir →</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="eq-box" style="margin-top:2rem">
+    <span class="label-eq">ESTADO DE SUPERPOSIÇÃO</span>
+    <div class="eq-part">
+      <span class="ket">|ψ⟩ =</span>
+      <span class="coef">α</span><span class="ket">|0⟩</span>
+      <span class="op">+</span>
+      <span class="coef">β</span><span class="ket">|1⟩</span>
+    </div>
+    <span style="font-size:0.7rem; color:var(--cinza); font-family:'DM Mono',monospace">com |α|² + |β|² = 1</span>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ═══ 02 ENTRELAÇAMENTO ═══ -->
+<section class="section">
+  <p class="section-num">02 — O Fenômeno</p>
+  <h2 class="section-title">O que é <em>entrelaçamento</em>?</h2>
+  <p class="section-body">
+    Duas partículas entrelaçadas <strong>não podem ser descritas independentemente</strong>. Elas formam um único estado quântico — mesmo separadas por bilhões de quilômetros. Ao medir uma, o estado da outra se torna instantaneamente definido.
+  </p>
+
+  <div class="eq-box">
+    <span class="label-eq">ESTADO DE BELL — PAR ENTRELAÇADO</span>
+    <div class="eq-part">
+      <span class="ket">|Φ⁺⟩ =</span>
+      <span style="font-size:1.1em; color:var(--cinza)">1/√2</span>
+      <span class="op">(</span>
+      <span class="ket">|00⟩</span>
+      <span class="op">+</span>
+      <span class="ket">|11⟩</span>
+      <span class="op">)</span>
+    </div>
+    <p style="font-size:0.65rem; color:var(--cinza); font-family:'DM Mono',monospace; width:100%; text-align:center">
+      Se Alice mede 0 → Bob tem 0. Se Alice mede 1 → Bob tem 1. Sempre.
+    </p>
+  </div>
+
+  <div class="demo-box" style="margin-top:2.5rem">
+    <span class="demo-label">Simulação Interativa</span>
+    <canvas id="entangle-demo"></canvas>
+    <p class="demo-instruction">CLIQUE EM QUALQUER PARTÍCULA PARA MEDIR</p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ═══ 03 NÃO É MAGIA ═══ -->
+<section class="section">
+  <p class="section-num">03 — A Prova</p>
+  <h2 class="section-title">Mas como sabemos que <em>não</em> é só correlação clássica?</h2>
+  <p class="section-body">
+    Talvez as partículas simplesmente "combinem o resultado" antes de se separar — como luvas num par. John Bell (1964) provou que essa explicação falha: há uma desigualdade matemática que qualquer teoria clássica deve respeitar, e o quantum a viola.
+  </p>
+
+  <div class="bell-section">
+    <h3>Desigualdade de Bell</h3>
+    <p>Ao medir qubits entrelaçados em diferentes ângulos, a <strong>correlação quântica</strong> ultrapassa o limite máximo possível para qualquer teoria de "variáveis ocultas". Experimentos (Aspect 1982, Delft 2015) confirmam: a natureza é genuinamente não-local.</p>
+    
+    <div class="bell-gauge-wrap" style="margin-top:1.5rem">
+      <div class="bell-gauge-label">
+        <span>Teoria Clássica (máximo)</span>
+        <span style="color:var(--cinza)">S ≤ 2</span>
+      </div>
+      <div class="bell-track">
+        <div class="bell-fill classical"></div>
+        <div class="bell-limit" style="left:75%">
+          <span class="limit-label">S = 2</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bell-gauge-wrap" style="margin-top:1rem">
+      <div class="bell-gauge-label">
+        <span>Experimentos Quânticos</span>
+        <span style="color:var(--azul)">S ≈ 2.83</span>
+      </div>
+      <div class="bell-track">
+        <div class="bell-fill quantum"></div>
+        <div class="bell-limit" style="left:75%">
+          <span class="limit-label">Limite Bell</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ═══ 04 ANALOGIAS ═══ -->
+<section class="section">
+  <p class="section-num">04 — Analogias</p>
+  <h2 class="section-title">Metáforas: <em>o que funcionam</em> e o que falham</h2>
+  <p class="section-body">Toda analogia clássica tem um ponto de ruptura. Aqui está o que cada uma captura — e onde ela quebra.</p>
+
+  <div class="analogies">
+    <div class="analogy">
+      <span class="analogy-num">1</span>
+      <div class="analogy-icon">🧤</div>
+      <h3>Luvas num par</h3>
+      <p>Se você abre uma caixa e vê a luva direita, sabe que a outra é esquerda — em qualquer lugar do mundo.</p>
+      <p style="margin-top:0.75rem; color:#8a6050"><strong>Onde falha:</strong> As luvas tinham lado definido desde o início. Qubits <em>não</em> — o resultado nasce no ato da medição.</p>
+      <span class="analogy-verdict verdict-partial">⚠ Parcial</span>
+    </div>
+    <div class="analogy">
+      <span class="analogy-num">2</span>
+      <div class="analogy-icon">🎲</div>
+      <h3>Dados combinados</h3>
+      <p>Dois dados que sempre mostram a mesma face, não importa onde jogados.</p>
+      <p style="margin-top:0.75rem; color:#8a6050"><strong>Onde falha:</strong> Dados têm resultado oculto antes do lançamento. O teorema de Bell elimina essa possibilidade para qubits.</p>
+      <span class="analogy-verdict verdict-no">✗ Inadequada</span>
+    </div>
+    <div class="analogy">
+      <span class="analogy-num">3</span>
+      <div class="analogy-icon">🌊</div>
+      <h3>Ondas sincronizadas</h3>
+      <p>Duas ondas que oscilam em perfeita fase, geradas pela mesma fonte, mesmo separadas.</p>
+      <p style="margin-top:0.75rem; color:#5a7040"><strong>O que captura:</strong> A ideia de um único sistema descrito por uma função de onda global, não duas entidades separadas.</p>
+      <span class="analogy-verdict verdict-yes">✓ A melhor</span>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ═══ 05 NÃO VIOLA EINSTEIN ═══ -->
+<section class="section">
+  <p class="section-num">05 — Relatividade</p>
+  <h2 class="section-title">Isso viola <em>Einstein</em>?</h2>
+  <p class="section-body">Einstein odiou o entrelaçamento. Chamou de "ação fantasmagórica à distância". Mas a física relativística está salva — e eis por quê.</p>
+
+  <div class="reveal-wrap">
+    <div class="reveal-card">
+      <span class="reveal-tag">PASSE O MOUSE →</span>
+      <div class="reveal-front">
+        <h3>O resultado é instantâneo</h3>
+        <p>Ao medir uma partícula, a outra colapsa no mesmo instante — independente da distância.</p>
+      </div>
+      <div class="reveal-back">
+        ✓ Verdadeiro. A correlação é imediata. Mas Alice não <em>escolhe</em> qual resultado obterá — o resultado é aleatório. Ela não tem como enviar uma mensagem codificada nessa aleatoriedade.
+      </div>
+    </div>
+    <div class="reveal-card">
+      <span class="reveal-tag">PASSE O MOUSE →</span>
+      <div class="reveal-front">
+        <h3>Logo, comunica mais rápido que a luz?</h3>
+        <p>Se o colapso é instantâneo, posso usá-lo para transmitir informação?</p>
+      </div>
+      <div class="reveal-back">
+        ✗ Não. Bob só vê um resultado aleatório. Sem saber o resultado de Alice (via canal clássico), ele não consegue extrair nenhuma informação. Nenhuma mensagem pode ser codificada — Einstein fica de pé.
+      </div>
+    </div>
+    <div class="reveal-card">
+      <span class="reveal-tag">PASSE O MOUSE →</span>
+      <div class="reveal-front">
+        <h3>Mas a correlação é real?</h3>
+        <p>Não é só coincidência estatística que poderíamos explicar classicamente?</p>
+      </div>
+      <div class="reveal-back">
+        ✓ A correlação é real e comprovada. O teorema de Bell e seus testes experimentais eliminam toda explicação baseada em variáveis ocultas locais. O universo é genuinamente não-local — mas de forma que não permite sinalização.
+      </div>
+    </div>
+    <div class="reveal-card">
+      <span class="reveal-tag">PASSE O MOUSE →</span>
+      <div class="reveal-front">
+        <h3>Então o que o entrelaçamento permite?</h3>
+        <p>Se não é comunicação supraluminal, qual é sua utilidade?</p>
+      </div>
+      <div class="reveal-back">
+        Criptografia quântica (QKD), teletransporte de estados quânticos, computação quântica distribuída, e sensores de precisão ultrassensíveis. Não velocidade — mas segurança e potência computacional sem precedente.
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ═══ 06 APLICAÇÕES ═══ -->
+<section class="section">
+  <p class="section-num">06 — Aplicações</p>
+  <h2 class="section-title">O que o entrelaçamento <em>possibilita</em></h2>
+
+  <div class="apps-grid">
+    <div class="app-card" style="--stripe: var(--azul)">
+      <div class="app-icon">🔐</div>
+      <h3>Criptografia Quântica</h3>
+      <p>QKD (Quantum Key Distribution): qualquer tentativa de espionagem colapsa o estado e é imediatamente detectada. Segurança garantida pelas leis da física.</p>
+    </div>
+    <div class="app-card" style="--stripe: var(--vermelho)">
+      <div class="app-icon">⚛️</div>
+      <h3>Computação Quântica</h3>
+      <p>Processadores quânticos usam qubits entrelaçados para explorar múltiplos caminhos computacionais simultaneamente — base do speedup quântico.</p>
+    </div>
+    <div class="app-card" style="--stripe: var(--ouro)">
+      <div class="app-icon">📡</div>
+      <h3>Teletransporte Quântico</h3>
+      <p>Transferência exata do estado quântico de uma partícula para outra — sem mover a partícula física. Já demonstrado com fótons, átomos e íons.</p>
+    </div>
+    <div class="app-card" style="--stripe: #2e7d32">
+      <div class="app-icon">🔭</div>
+      <h3>Sensores de Precisão</h3>
+      <p>Relógios atômicos entrelaçados e interferômetros quânticos atingem precisão além do limite quântico padrão — úteis em GPS, geologia e astrofísica.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ═══ QUIZ ═══ -->
+<section class="section">
+  <p class="section-num">07 — Quiz</p>
+  <h2 class="section-title">Teste seu <em>entendimento</em></h2>
+
+  <div class="quiz-box">
+    <p class="quiz-q">Duas partículas entrelaçadas estão em lados opostos da galáxia. Alice mede a sua e obtém "spin para cima". O que Bob encontrará, e por quê isso não viola a relatividade?</p>
+    <div class="quiz-opts">
+      <button class="qbtn" onclick="ans(this,false)">A) Bob obtém spin aleatório; o entrelaçamento acabou após a medição de Alice</button>
+      <button class="qbtn" onclick="ans(this,true)">B) Bob obtém spin definido correlacionado, mas não consegue saber o resultado de Alice sem comunicação clássica</button>
+      <button class="qbtn" onclick="ans(this,false)">C) Bob obtém a mesma coisa instantaneamente; isso é uma violação aceitável da relatividade</button>
+      <button class="qbtn" onclick="ans(this,false)">D) O estado de Bob fica indefinido para sempre após Alice medir</button>
+    </div>
+    <div class="quiz-feedback" id="qfb"></div>
+  </div>
+</section>
+
+<footer>
+  <p>Entrelaçamento Quântico · Mecânica Quântica</p>
+  <p>Baseado nos trabalhos de Einstein-Podolsky-Rosen (1935), John Bell (1964),<br>Alain Aspect (1982) e experimentos livres de lacunas de Delft (2015)</p>
+</footer>
+
+<script>
+// ── PROGRESS ──
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('prog').style.width = pct + '%';
+});
+
+// ── HERO CANVAS ──
+(function() {
+  const canvas = document.getElementById('hero-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles, connections;
+
+  function resize() {
+    W = canvas.width = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+
+  class Particle {
+    constructor(paired) {
+      this.paired = paired; // null or reference
+      this.reset();
+    }
+    reset() {
+      this.x = Math.random() * W;
+      this.y = Math.random() * H;
+      this.vx = (Math.random() - 0.5) * 0.4;
+      this.vy = (Math.random() - 0.5) * 0.4;
+      this.r = 2 + Math.random() * 2;
+      this.phase = Math.random() * Math.PI * 2;
+      this.speed = 0.01 + Math.random() * 0.02;
+      this.hue = Math.random() > 0.5 ? 200 : 45; // blue or gold
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.phase += this.speed;
+      if (this.x < 0 || this.x > W) this.vx *= -1;
+      if (this.y < 0 || this.y > H) this.vy *= -1;
+    }
+    draw() {
+      const glow = Math.sin(this.phase) * 0.5 + 0.5;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r + glow * 2, 0, Math.PI * 2);
+      ctx.fillStyle = this.hue === 200
+        ? `rgba(80, 140, 220, ${0.4 + glow * 0.5})`
+        : `rgba(200, 150, 20, ${0.4 + glow * 0.5})`;
+      ctx.fill();
+
+      // glow halo
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r + glow * 8, 0, Math.PI * 2);
+      const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.r + glow * 8);
+      g.addColorStop(0, this.hue === 200 ? 'rgba(80,140,220,0.15)' : 'rgba(200,150,20,0.15)');
+      g.addColorStop(1, 'transparent');
+      ctx.fillStyle = g;
+      ctx.fill();
+    }
+  }
+
+  function init() {
+    particles = [];
+    const n = Math.min(60, Math.floor(W * H / 12000));
+    for (let i = 0; i < n; i++) {
+      particles.push(new Particle(null));
+    }
+    // pair up
+    for (let i = 0; i < particles.length - 1; i += 2) {
+      particles[i].paired = particles[i+1];
+      particles[i+1].paired = particles[i];
+      particles[i].hue = 200;
+      particles[i+1].hue = 45;
+    }
+  }
+
+  function drawConnections() {
+    for (let i = 0; i < particles.length; i += 2) {
+      const a = particles[i];
+      const b = particles[i+1];
+      const dist = Math.hypot(a.x - b.x, a.y - b.y);
+      const maxDist = Math.min(W, H) * 0.7;
+      if (dist > maxDist) continue;
+      const alpha = (1 - dist / maxDist) * 0.3 * (Math.sin(a.phase) * 0.5 + 0.5);
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      // Bezier curve for organic look
+      const cx = (a.x + b.x) / 2 + Math.sin(a.phase) * 30;
+      const cy = (a.y + b.y) / 2 + Math.cos(b.phase) * 30;
+      ctx.quadraticCurveTo(cx, cy, b.x, b.y);
+      const grad = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
+      grad.addColorStop(0, `rgba(80,140,220,${alpha})`);
+      grad.addColorStop(1, `rgba(200,150,20,${alpha})`);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+  }
+
+  function loop() {
+    ctx.clearRect(0,0,W,H);
+    particles.forEach(p => p.update());
+    drawConnections();
+    particles.forEach(p => p.draw());
+    requestAnimationFrame(loop);
+  }
+
+  resize();
+  init();
+  loop();
+  window.addEventListener('resize', () => { resize(); init(); });
+})();
+
+// ── SUPERPOSITION COIN ──
+let coinCollapsed = false;
+function collapseCoin() {
+  if (coinCollapsed) {
+    coinCollapsed = false;
+    const c = document.getElementById('q-coin');
+    c.style.animation = 'quantum-shimmer 3s ease-in-out infinite';
+    c.textContent = '✦';
+    c.style.background = '';
+    document.getElementById('q-label').innerHTML = 'QUBIT<br><span style="color:#4060a0">Cara E Coroa<br>Clique para medir →</span>';
+    return;
+  }
+  coinCollapsed = true;
+  const result = Math.random() > 0.5;
+  const c = document.getElementById('q-coin');
+  c.style.animation = 'none';
+  c.textContent = result ? '👑' : '🪙';
+  c.style.background = result
+    ? 'radial-gradient(circle at 35% 35%, #3a2000, #1a0e00)'
+    : 'radial-gradient(circle at 35% 35%, #2a2020, #0e0a0a)';
+  document.getElementById('q-label').innerHTML = `QUBIT MEDIDO<br><span style="color:#c0a020">${result ? 'CARA' : 'COROA'} — Estado colapsado<br>Clique para resetar</span>`;
+}
+
+// ── ENTANGLEMENT DEMO ──
+(function() {
+  const canvas = document.getElementById('entangle-demo');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  let stateA = null, stateB = null; // null = superposition, true = up, false = down
+  let measureAnim = 0;
+  let wavePulse = 0;
+
+  function resize() {
+    W = canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+    H = canvas.height = 340 * window.devicePixelRatio;
+    canvas.style.height = '340px';
+  }
+
+  const clr = {
+    up: '#4488ff',
+    down: '#ff6644',
+    superpos: '#8855cc',
+    link: '#b8860b',
+    bg: '#0a0a12',
+  };
+
+  function drawParticle(x, y, state, t, label) {
+    const scale = window.devicePixelRatio;
+    const px = x * scale, py = y * scale, r = 44 * scale;
+
+    // glow
+    const g = ctx.createRadialGradient(px, py, 0, px, py, r * 2);
+    const col = state === null ? clr.superpos : (state ? clr.up : clr.down);
+    g.addColorStop(0, col + '30');
+    g.addColorStop(1, 'transparent');
+    ctx.beginPath();
+    ctx.arc(px, py, r * 2, 0, Math.PI * 2);
+    ctx.fillStyle = g;
+    ctx.fill();
+
+    // ring
+    ctx.beginPath();
+    ctx.arc(px, py, r, 0, Math.PI * 2);
+    ctx.strokeStyle = col + 'aa';
+    ctx.lineWidth = 2 * scale;
+    ctx.stroke();
+
+    // inner
+    ctx.beginPath();
+    ctx.arc(px, py, r * 0.7, 0, Math.PI * 2);
+    ctx.fillStyle = '#0d0d1a';
+    ctx.fill();
+
+    if (state === null) {
+      // superposition — spinning arc
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.rotate(t * 2);
+      ctx.beginPath();
+      ctx.arc(0, 0, r * 0.5, 0, Math.PI * 1.5);
+      ctx.strokeStyle = clr.superpos + 'cc';
+      ctx.lineWidth = 3 * scale;
+      ctx.stroke();
+      ctx.rotate(Math.PI);
+      ctx.beginPath();
+      ctx.arc(0, 0, r * 0.35, 0, Math.PI);
+      ctx.strokeStyle = clr.superpos + '88';
+      ctx.lineWidth = 2 * scale;
+      ctx.stroke();
+      ctx.restore();
+
+      // question mark
+      ctx.fillStyle = '#cc99ff';
+      ctx.font = `${20 * scale}px Playfair Display, serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('?', px, py);
+    } else {
+      // defined state
+      ctx.fillStyle = col;
+      ctx.font = `bold ${16 * scale}px DM Mono, monospace`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(state ? '↑ 0' : '↓ 1', px, py);
+    }
+
+    // label
+    ctx.fillStyle = '#6a6050';
+    ctx.font = `${11 * scale}px DM Mono, monospace`;
+    ctx.textAlign = 'center';
+    ctx.fillText(label, px, py + r + 20 * scale);
+
+    // click hint
+    if (state === null) {
+      ctx.fillStyle = '#3a3020';
+      ctx.font = `${9 * scale}px DM Mono, monospace`;
+      ctx.fillText('CLIQUE PARA MEDIR', px, py + r + 34 * scale);
+    }
+  }
+
+  function drawLink(t) {
+    const scale = window.devicePixelRatio;
+    const ax = 220 * scale, ay = 170 * scale;
+    const bx = (W - 220 * scale), by = 170 * scale;
+
+    if (stateA !== null || stateB !== null) {
+      // solid link after measurement
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      const cx = W / 2, cy = ay - 30 * scale * Math.sin(t * 0.5);
+      ctx.quadraticCurveTo(cx, cy, bx, by);
+      const grad = ctx.createLinearGradient(ax, ay, bx, by);
+      grad.addColorStop(0, clr.up + '99');
+      grad.addColorStop(1, clr.down + '99');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 2 * scale;
+      ctx.setLineDash([]);
+      ctx.stroke();
+
+      // pulse along the line
+      wavePulse = (wavePulse + 0.02) % 1;
+      const tx = ax + (bx - ax) * wavePulse;
+      const ty = ay + (cy - ay) * 2 * wavePulse * (1 - wavePulse) + (by - ay) * wavePulse * wavePulse;
+      ctx.beginPath();
+      ctx.arc(tx, ty, 5 * scale, 0, Math.PI * 2);
+      ctx.fillStyle = clr.link;
+      ctx.fill();
+    } else {
+      // dashed quantum link in superposition
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      const segments = 8;
+      for (let i = 0; i <= segments; i++) {
+        const frac = i / segments;
+        const cx1 = ax + (bx - ax) * frac;
+        const cy1 = ay + Math.sin(frac * Math.PI * 3 + t * 2) * 18 * scale;
+        if (i === 0) ctx.moveTo(cx1, cy1);
+        else ctx.lineTo(cx1, cy1);
+      }
+      const alpha = 0.3 + Math.sin(t * 1.5) * 0.2;
+      ctx.strokeStyle = `rgba(184,134,11,${alpha})`;
+      ctx.lineWidth = 1.5 * scale;
+      ctx.setLineDash([6 * scale, 4 * scale]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
+
+  function drawLabel(t) {
+    const scale = window.devicePixelRatio;
+    ctx.fillStyle = '#3a3020';
+    ctx.font = `${10 * scale}px DM Mono, monospace`;
+    ctx.textAlign = 'center';
+
+    if (stateA === null && stateB === null) {
+      ctx.fillText('— ENTRELAÇADOS EM SUPERPOSIÇÃO —', W / 2, 38 * scale);
+    } else {
+      ctx.fillStyle = '#b8860b';
+      ctx.fillText('COLAPSO INSTANTÂNEO — ESTADOS DEFINIDOS', W / 2, 38 * scale);
+    }
+  }
+
+  let t = 0;
+  function loop() {
+    t += 0.016;
+    ctx.clearRect(0, 0, W, H);
+
+    // bg
+    ctx.fillStyle = '#0a0a12';
+    ctx.fillRect(0, 0, W, H);
+
+    const scale = window.devicePixelRatio;
+    drawLink(t);
+    drawParticle(220, 170, stateA, t, 'PARTÍCULA A');
+    drawParticle(W / scale - 220, 170, stateB, t, 'PARTÍCULA B');
+    drawLabel(t);
+
+    requestAnimationFrame(loop);
+  }
+
+  canvas.addEventListener('click', function(e) {
+    if (stateA !== null || stateB !== null) {
+      // reset
+      stateA = null; stateB = null; wavePulse = 0;
+      return;
+    }
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const cW = canvas.offsetWidth;
+
+    if (mx < cW / 2) {
+      stateA = Math.random() > 0.5;
+      stateB = stateA; // correlated
+    } else {
+      stateB = Math.random() > 0.5;
+      stateA = stateB; // correlated
+    }
+  });
+
+  resize();
+  loop();
+  window.addEventListener('resize', resize);
+})();
+
+// ── QUIZ ──
+let answered = false;
+function ans(btn, correct) {
+  if (answered) return;
+  answered = true;
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  const fb = document.getElementById('qfb');
+  fb.classList.add('show');
+  if (correct) {
+    fb.className = 'quiz-feedback show c';
+    fb.textContent = '✓ Correto! O estado de Bob colapsa correlacionado com o de Alice — ambos "escolhem" consistentemente. Mas Bob não tem como saber que Alice já mediu: seu resultado, isoladamente, parece aleatório. Só comparando resultados via canal clássico a correlação se torna visível. Por isso, nenhuma informação viaja instantaneamente.';
+  } else {
+    fb.className = 'quiz-feedback show w';
+    fb.textContent = '✗ Não é bem assim. O entrelaçamento persiste — e o estado de Bob fica definido (correlacionado) após a medição de Alice. A chave: Bob não sabe o resultado de Alice sem comunicação clássica. Sem isso, os resultados de Bob parecem puramente aleatórios — nenhuma informação é transmitida.';
+  }
+}
+</script>
+</body>
+</html>
