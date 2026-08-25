@@ -7,7 +7,7 @@ De Broglie propôs que uma partícula com momento $p$ possui comprimento de onda
 
 $$\lambda=\frac{h}{p}.$$
 
-![Ondas de matéria](../ondas-de-materia-de-broglie.png)
+![Ondas de matéria](ondas-de-materia-de-broglie.png)
 
 Padrões ondulatórios permitidos precisam satisfazer condições de contorno, de modo semelhante a uma onda estacionária numa corda. Experimentos posteriores de difração de elétrons confirmaram que matéria pode produzir interferência.
 

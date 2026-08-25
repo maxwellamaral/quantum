@@ -7,7 +7,7 @@ Bohr propôs, em 1913, que o elétron só poderia ocupar determinados níveis de
 
 $$hf=|E_f-E_i|.$$
 
-![Modelo de Bohr](../modelo-de-bohr-saltos-de-energia.png)
+![Modelo de Bohr](modelo-de-bohr-saltos-de-energia.png)
 
 Isso explicou por que átomos emitem linhas espectrais específicas, em vez de todas as cores possíveis.
 

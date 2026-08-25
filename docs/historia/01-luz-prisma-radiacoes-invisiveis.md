@@ -19,7 +19,7 @@ Newton não descobriu o infravermelho nem o ultravioleta. Essa confusão histór
 
 Em 1800, William Herschel deixou a luz solar entrar em um ambiente escurecido, separou-a com um prisma e posicionou termômetros de mercúrio em diferentes regiões. Usou termômetros fora do feixe como controle. A temperatura aumentava em direção ao vermelho e também subia além dele, onde não havia luz visível.
 
-![Experimento de Herschel](../experimento-de-herschel-infravermelho.png)
+![Experimento de Herschel](experimento-de-herschel-infravermelho.png)
 
 O termômetro detectava aquecimento provocado pela radiação; não media a “temperatura da cor”. Herschel chamou o fenômeno de raios caloríficos. Hoje o chamamos de **infravermelho**.
 
@@ -27,7 +27,7 @@ O termômetro detectava aquecimento provocado pela radiação; não media a “t
 
 Em 1801, Johann Wilhelm Ritter colocou cloreto de prata, que escurece sob ação da luz, ao longo do espectro. A reação foi mais rápida além do violeta. O detector químico revelou o **ultravioleta**.
 
-![Experimento de Ritter](../experimento-de-ritter-ultravioleta.png)
+![Experimento de Ritter](experimento-de-ritter-ultravioleta.png)
 
 ## Relação com a computação quântica
 

@@ -7,7 +7,7 @@ updated: 2026-08-15T20:51
 
 Um corpo negro ideal absorve toda a radiação incidente. Na prática, usa-se uma cavidade aquecida com um pequeno orifício. A radiação interna sofre muitas absorções e emissões, e uma pequena parte escapa pelo furo.
 
-![Experimento da cavidade](../experimento-da-cavidade-corpo-negro.png)
+![Experimento da cavidade](experimento-da-cavidade-corpo-negro.png)
 
 Passando a radiação por um prisma ou uma rede de difração e medindo sua intensidade, obtemos um espectro contínuo. Todas as faixas são emitidas simultaneamente; a temperatura muda a intensidade relativa e a posição do pico.
 
@@ -21,7 +21,7 @@ $$\lambda_{\max}T=b.$$
 
 O espectro do Sol se aproxima do de um corpo negro a aproximadamente $5.800\,\text{K}$.
 
-![Espectro solar e temperatura](../espectro-do-sol-e-temperatura.png)
+![Espectro solar e temperatura](espectro-do-sol-e-temperatura.png)
 
 ## A crise clássica
 
@@ -29,7 +29,7 @@ A teoria clássica previa energia ilimitada em frequências altas, a chamada cat
 
 $$E_n=nhf,\qquad n=0,1,2,\ldots$$
 
-![Quantização na cavidade](../quantizacao-na-cavidade-negra.png)
+![Quantização na cavidade](quantizacao-na-cavidade-negra.png)
 
 ## Relação com a computação quântica
 

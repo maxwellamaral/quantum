@@ -7,7 +7,7 @@ updated: 2026-08-15T20:51
 
 Luz incide sobre uma superfície metálica. Quando a frequência é suficiente, elétrons são ejetados e podem ser coletados por um circuito. Hallwachs usou uma placa de zinco e luz ultravioleta; outros metais, como sódio e césio, respondem a frequências menores.
 
-![Efeito fotoelétrico](../efeito-fotoeletrico.png)
+![Efeito fotoelétrico](efeito-fotoeletrico.png)
 
 Os resultados fundamentais são:
 
